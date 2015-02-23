@@ -9,6 +9,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using System.Xml.Linq;
 
 namespace IdentitySample.Controllers
 {
@@ -58,6 +59,27 @@ namespace IdentitySample.Controllers
             private set { _signInManager = value; }
         }
 
+        //Fill CurrentUser XML
+        private bool FillCurUser(LoginViewModel model)
+        {
+            string path = System.Web.HttpContext.Current.Server.MapPath("~\\App_Data\\CurUser.xml");
+            try {
+        XDocument doc = new XDocument();
+        XElement elm = new XElement("CurUser");
+       
+          XElement name = new XElement("UserName");
+          name.Value=model.Email;
+          elm.Add(name);
+        doc.Add(elm);
+        doc.Save(path);
+      }
+      catch {
+        return false;
+      }
+      return true;
+    }
+        
+
         //
         // POST: /Account/Login
         [HttpPost]
@@ -75,8 +97,10 @@ namespace IdentitySample.Controllers
             var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
             switch (result)
             {
-                case SignInStatus.Success:
+                case SignInStatus.Success: {
+                    FillCurUser(model);
                     return RedirectToLocal(returnUrl);
+                }
                 case SignInStatus.LockedOut:
                     return View("Lockout");
                 case SignInStatus.RequiresVerification:

@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using RoleBase.Models;
 using System.IO;
 using IdentitySample.Models;
+using System.Xml.Linq;
 namespace RoleBase.Controllers
 {
     [Authorize(Roles = "Developer")]
@@ -19,7 +20,13 @@ namespace RoleBase.Controllers
         }
 
 
-     
+        //Get Current User Name
+        private string GetUser()
+        {
+            string path = System.Web.HttpContext.Current.Server.MapPath("~\\App_Data\\CurUser.xml");
+            XDocument doc = XDocument.Load(path);
+            return doc.Element("CurUser").Element("UserName").Value;
+        }
 
         //
         // POST: /Developers/
@@ -29,7 +36,7 @@ namespace RoleBase.Controllers
             if (f.files != null)
             {
                 
-                var folderpath = Server.MapPath("~/Uploads/");
+                var folderpath = Server.MapPath("~/Uploads/"+GetUser());
                 if (!Directory.Exists(folderpath)) Directory.CreateDirectory(folderpath);
                 foreach (var file in f.files)
                 {
@@ -41,7 +48,7 @@ namespace RoleBase.Controllers
                     }
                   
                 }
-                return "Successful.";
+                return "Successful. Upload your files to "+folderpath;
             }
             else
             {
