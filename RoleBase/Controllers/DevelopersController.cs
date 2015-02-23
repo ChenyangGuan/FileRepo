@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using RoleBase.Models;
 using System.IO;
+using IdentitySample.Models;
 namespace RoleBase.Controllers
 {
     [Authorize(Roles = "Developer")]
@@ -17,22 +18,36 @@ namespace RoleBase.Controllers
             return View();
         }
 
+
+     
+
         //
         // POST: /Developers/
         [HttpPost]
-        public ActionResult Index(Files f)
+        public string Index(Files f)
         {
-            foreach (var file in f.files)
+            if (f.files != null)
             {
-                if (file.ContentLength > 0)
+                
+                var folderpath = Server.MapPath("~/Uploads/");
+                if (!Directory.Exists(folderpath)) Directory.CreateDirectory(folderpath);
+                foreach (var file in f.files)
                 {
-                    var filename = Path.GetFileName(file.FileName);
-                    var path = Path.Combine(Server.MapPath("~/Uploads/"), filename);
-                    file.SaveAs(path);
+                    if (file.ContentLength > 0 && file!=null)
+                    {
+                        var filename = Path.GetFileName(file.FileName);
+                        var path = Path.Combine(folderpath, filename);
+                        file.SaveAs(path);
+                    }
+                  
                 }
-
+                return "Successful.";
             }
-            return Content("Success");
+            else
+            {
+                return "Error.";
+            }
+            
         }
 	}
 }
