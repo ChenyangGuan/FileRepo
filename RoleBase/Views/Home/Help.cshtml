@@ -1,0 +1,51 @@
+﻿@{
+    ViewBag.Title = "Help";
+}
+
+<h2>Help</h2>
+<div class="row">
+    <div class="col-md-8">
+        <h3>About File Repository</h3>
+        <p>
+            This website supports the storage, retrieval, and viewing of source code
+            files. A user will be able to upload a file or folder, view any of the files in a folder, specify dependency information,
+            and retrieve a selected file and all its dependencies, all from a browser. The web service supports synchronizing the
+            contents of a server folder with a specified folder on the client machine.
+        </p>
+        <p>
+            It supports:
+        </p>
+        <ul>
+
+            <li>Uploading a specified client file to a selected folder on the server.</li>
+            <li>
+                Creating new folders on the server.
+            </li>
+            <li>
+                Specifying persistent dependency relationships between files selected by name and date.
+            </li>
+            <li>
+                Viewing a selected file’s text.
+            </li>
+            <li>
+                Downloading a selected file and optionally all its dependencies.
+            </li>
+        </ul>
+    </div>
+    <div class="col-md-4">
+        <h3>About the Roles</h3>
+        <p>In this websites, there are 3 roles:</p>
+        <ul>
+            <li>
+                <strong>Normal Users:</strong> Just view and download the files in the server.
+            </li>
+            <li>
+                <strong>Developers:</strong> Upload files; Create directories and specify files dependencies.
+            </li>
+            <li>
+                <strong>Administrator:</strong> Manage Roles; Rename Directories'; Delete files.
+            </li>
+        </ul>
+
+    </div>
+</div>
