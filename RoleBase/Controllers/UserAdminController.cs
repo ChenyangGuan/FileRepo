@@ -56,7 +56,19 @@ namespace IdentitySample.Controllers
         // GET: /Users/
         public async Task<ActionResult> Index()
         {
-            return View(await UserManager.Users.ToListAsync());
+            
+            
+            //return View(await UserManager.Users.ToListAsync());
+            List<IList<string>> roles=new  List<IList<string>>();
+            foreach(var user in await UserManager.Users.ToListAsync()){
+                IList<string> x = await UserManager.GetRolesAsync(user.Id);
+                roles.Add(x);
+            }
+            return View(new IndexUserViewModel() {
+                user = await UserManager.Users.ToListAsync(),
+                RoleList=roles
+
+            });
         }
 
         //
@@ -68,6 +80,7 @@ namespace IdentitySample.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             var user = await UserManager.FindByIdAsync(id);
+           
 
             ViewBag.RoleNames = await UserManager.GetRolesAsync(user.Id);
 

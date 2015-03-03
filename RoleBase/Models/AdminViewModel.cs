@@ -4,6 +4,12 @@ using System.Web.Mvc;
 
 namespace IdentitySample.Models
 {
+
+    public class IndexUserViewModel
+    {
+       public IEnumerable <ApplicationUser> user;
+       public IEnumerable<IList<string>> RoleList;
+    }
     public class RoleViewModel
     {
         public string Id { get; set; }
