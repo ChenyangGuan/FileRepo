@@ -5,7 +5,7 @@ using System.Web;
 
 namespace RoleBase.Models
 {
-    public class Files
+    public class Fileset
     {
       
         public IEnumerable<HttpPostedFileBase> files { get; set; }
