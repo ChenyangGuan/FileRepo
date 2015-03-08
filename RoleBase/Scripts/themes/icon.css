@@ -25,6 +25,9 @@
 .icon-download{
     background:url('icons/download.png') no-repeat center center;
 }
+.icon-dependency{
+    background:url('icons/dependency.png') no-repeat center center;
+}
 .icon-no{
 	background:url('icons/no.png') no-repeat center center;
 }

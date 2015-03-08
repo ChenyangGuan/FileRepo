@@ -8,7 +8,7 @@ using System.Web.Mvc;
 
 namespace RoleBase.Controllers
 {
-    [Authorize(Roles = "NormalUser")]
+    [Authorize(Roles = "NormalUser" )]
     public class NormalUsersController : Controller
     {
         //
@@ -53,6 +53,7 @@ namespace RoleBase.Controllers
 
         // 
         // GET Home/Getjson
+        [AllowAnonymous]
         public ActionResult Getjson()
         {
             List<Files> dataset = new List<Files>();
@@ -70,7 +71,8 @@ namespace RoleBase.Controllers
         //View & Download
         #region
         //GET
-        //View
+        //View text
+        [AllowAnonymous]
         public ActionResult viewFile(string fullpath)
         {
             fullpath = Server.MapPath(fullpath);
@@ -79,9 +81,20 @@ namespace RoleBase.Controllers
            
         }
 
+        //GET
+        //View pic
+        [AllowAnonymous]
+        public string viewPic(string fullpath)
+        {
+            fullpath = Server.MapPath(fullpath);
+            return fullpath;
+
+        }
+
 
         //GET
         //Download
+        [AllowAnonymous]
         public ActionResult Download(string fullpath)
         {
             //multiple files

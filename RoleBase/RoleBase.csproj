@@ -436,6 +436,7 @@
     <Content Include="Views\NormalUsers\Index.cshtml" />
     <Content Include="Views\Message\RegisterSuccess.cshtml" />
     <Content Include="Scripts\jquery-2.1.3.min.map" />
+    <Content Include="Views\Shared\_FileBrowserPartial.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

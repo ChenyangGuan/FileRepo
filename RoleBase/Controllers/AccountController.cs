@@ -66,8 +66,7 @@ namespace IdentitySample.Controllers
             try {
         XDocument doc = new XDocument();
         XElement elm = new XElement("CurUser");
-       
-          XElement name = new XElement("UserName");
+        XElement name = new XElement("UserName");
           name.Value=model.Email;
           elm.Add(name);
         doc.Add(elm);
