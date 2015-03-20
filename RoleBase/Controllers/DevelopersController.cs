@@ -33,18 +33,22 @@ namespace RoleBase.Controllers
         [HttpPost]
         public string Index(Fileset f)
         {
-            if (f.files != null)
+            if (f.files.Count()>0)
             {
                 
                 var folderpath = Server.MapPath("~/Uploads/"+GetUser());
                 if (!Directory.Exists(folderpath)) Directory.CreateDirectory(folderpath);
                 foreach (var file in f.files)
                 {
-                    if (file.ContentLength > 0 && file!=null)
+                    if (file!=null && file.ContentLength > 0 )
                     {
                         var filename = Path.GetFileName(file.FileName);
                         var path = Path.Combine(folderpath, filename);
                         file.SaveAs(path);
+                    }
+                    else
+                    {
+                        return "Error.Please Choose at least one file.";
                     }
                   
                 }
@@ -56,5 +60,21 @@ namespace RoleBase.Controllers
             }
             
         }
+
+
+        //GET
+        public string ShowDependency(string filename)
+        {
+            string path = System.Web.HttpContext.Current.Server.MapPath("~\\App_Data\\FileDependency.xml");
+            XDocument doc = XDocument.Load(path);
+            var fl = doc.Element("FileDependency").Element("FileList");
+            XElement filetag = new XElement("File");
+            XElement FileName = new XElement("FileName");
+            XElement FullPath = new XElement("FullPath");
+            XElement Dependencies = new XElement("Dependencies");
+            XElement FileFullPath = new XElement("FileFullPath");
+            return "";
+        }
+
 	}
 }

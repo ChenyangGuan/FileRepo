@@ -81,15 +81,7 @@ namespace RoleBase.Controllers
            
         }
 
-        //GET
-        //View pic
-        [AllowAnonymous]
-        public string viewPic(string fullpath)
-        {
-            fullpath = Server.MapPath(fullpath);
-            return fullpath;
-
-        }
+        
 
 
         //GET

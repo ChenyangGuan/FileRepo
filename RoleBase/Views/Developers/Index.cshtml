@@ -31,7 +31,10 @@
     var bar = $('.progress-bar');
     var percent = $('.progress-bar');
     var status = $('#status');
+    var url = '@Url.Content("~")';
     $('form').ajaxForm({
+        type: "POST",
+        url: url+"uploadfile/api/fileupload",
         beforeSend: function() {
             status.empty();
             var percentVal = '0%';
@@ -43,15 +46,33 @@
             bar.width(percentVal)
             percent.html(percentVal);
         },
-        success: function() {
+        //success: function() {
+        //    var percentVal = '100%';
+        //    bar.width(percentVal)
+        //    percent.html(percentVal);
+        //    $('#filestree').treegrid('reload');
+        //},
+        success: function (messages) {
             var percentVal = '100%';
             bar.width(percentVal)
             percent.html(percentVal);
+            
+            var mess = "";
+            for (i = 0; i < messages.length; i++) {
+                mess += messages[i] + "<br/>";
+
+                //alert(messages[i]);
+            }
+            status.html("<p style='color:red '>" + mess + "</p>");
             $('#filestree').treegrid('reload');
         },
-        complete: function(xhr) {
-            status.html(xhr.responseText);
-        }
+        error:function(xhr){            
+                var percentVal = '0%';
+                bar.width(percentVal)
+                percent.html(percentVal);
+                status.html("<p style='color:red '>" + xhr.responseText + "</p>");
+        },
+        
     }); 
 
     })();       
