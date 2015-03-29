@@ -31,10 +31,7 @@
     var bar = $('.progress-bar');
     var percent = $('.progress-bar');
     var status = $('#status');
-    var url = '@Url.Content("~")';
-    $('form').ajaxForm({
-        type: "POST",
-        url: url+"uploadfile/api/fileupload",
+    $('form').ajaxForm({       
         beforeSend: function() {
             status.empty();
             var percentVal = '0%';
@@ -46,23 +43,11 @@
             bar.width(percentVal)
             percent.html(percentVal);
         },
-        //success: function() {
-        //    var percentVal = '100%';
-        //    bar.width(percentVal)
-        //    percent.html(percentVal);
-        //    $('#filestree').treegrid('reload');
-        //},
-        success: function (messages) {
+        
+        success: function(mess) {
             var percentVal = '100%';
             bar.width(percentVal)
-            percent.html(percentVal);
-            
-            var mess = "";
-            for (i = 0; i < messages.length; i++) {
-                mess += messages[i] + "<br/>";
-
-                //alert(messages[i]);
-            }
+            percent.html(percentVal);        
             status.html("<p style='color:red '>" + mess + "</p>");
             $('#filestree').treegrid('reload');
         },
