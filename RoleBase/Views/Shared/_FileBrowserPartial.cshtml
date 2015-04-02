@@ -1,5 +1,5 @@
 ﻿<div style="float:left;width:48%">
-    <table title="Folder Browser" class="easyui-treegrid" style="width:100%;height:750px" id="filestree"></table>
+    <table title="Folder Browser" class="easyui-treegrid" style="width:100%;height:500px" id="filestree"></table>
     <div id="tb">
         <a href="#" class="easyui-linkbutton" iconcls="icon-search" plain="true" onclick="ViewFile()">View</a>
         @if (User.IsInRole("NormalUser")) {         
@@ -13,13 +13,9 @@
     </div>
 </div>
 
-<div style="padding-left:10px;float:left;width:40%">
-    <div id="f1" style="float:left;display:block">
-    </div>
-    <div id="f2" style="float:left;display:block">
-    </div>
-    <div id="f3" style="float:left;display:block">
-    </div>
+<div style="padding-left:10px;float:left;width:45%">
+    <div id="filepanel"  style="float:left;display:block;height:500px">
+    </div>    
 </div>
 
 <div id="dlg" class="easyui-dialog" title="Warning" style="width:300px;height:100px;padding:10px"
@@ -33,8 +29,13 @@
     <a href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-ok" onclick="Back()">OK</a>
     
 </div>
-<script>
 
+<div id="tt">
+    <a href="javascript:void(0)" class="icon-add" onclick="javascript:alert('add')"></a>
+    <a href="javascript:void(0)" class="icon-edit" onclick="javascript:alert('edit')"></a>   
+</div>
+
+<script>
 
     function Back(){
         $('#dlg').dialog('close');
@@ -43,9 +44,7 @@
 
 
     $(document).on("pageload", function () {
-        $('#f1').hide();
-        $('#f2').hide();
-        $('#f3').hide();
+        $('#filepanel').hide();
     });
 
     $("#filestree").treegrid({
@@ -133,6 +132,54 @@
 
 
     }
+
+    function NextFile(i) {
+        var rows = $("#filestree").treegrid("getSelections");
+        var fullpath = rows[i].FullPath;
+        var filename = fullpath.substr(fullpath.lastIndexOf("\\") + 1);
+        if (filename.indexOf(".jpg") != -1 || filename.indexOf(".png") != -1) {
+            var filepanel = $('#filepanel');
+            filepanel.panel({
+                width: 530,
+                height: 500,
+                title: filename,
+                tools:[{
+                    iconCls:'icon-undo',
+                    handler:function(){alert('new')}
+                },
+                {
+                    iconCls: 'icon-redo',
+                    handler: function () { alert('new') }
+                 }
+                ],
+                href: null
+            });
+            filepanel.slideDown();
+            var path = fullpath.substr(fullpath.indexOf("~") + 2);
+            filepanel.html("<img src='" + path + "' width='100%' height='100%'/>");
+
+        }
+        else {
+            var url = '@Url.Action("viewFile", "NormalUsers")' + "?fullpath=" + fullpath;
+            var filepanel = $('#filepanel');
+            filepanel.panel({
+                width: 530,
+                height: 500,
+                title: filename,
+                href: url,
+                tools: [{
+                    iconCls: 'icon-undo',
+                    handler: function () { alert('new') }
+                },
+                {
+                    iconCls: 'icon-redo',
+                    handler: function () { alert('new') }
+                }
+                ],
+            });
+            filepanel.slideDown();
+        }
+    }
     function ViewFile() {
 
         var rows = $("#filestree").treegrid("getSelections");
@@ -140,44 +187,12 @@
             $('#dlg').dialog('open');
             $('#dlg').html("Please choose at least one file.");
         }
-        if (rows.length > 3) {
-            alert("You can't view more than 3 files each time..");
-        }
-        else{
-            for (var i = 1; i <=rows.length; i++) {
-                var fullpath = rows[i - 1].FullPath;
-                var filename = fullpath.substr(fullpath.lastIndexOf("\\") + 1);              
-                if (filename.indexOf(".jpg") != -1 || filename.indexOf(".png") != -1) {
-                    //var panelid = "#f" + i;
-                    //$(panelid).panel({ href: null });
-                    var filepanel = $('#f' + i);
-                    filepanel.panel({
-                        width: 500,
-                        height: 250,
-                        title: filename,
-                        href:null
-                    });
-                    filepanel.slideDown();
-                    var path = fullpath.substr(fullpath.indexOf("~") + 2);                    
-                    filepanel.html("<img src='" + path + "' width='100%' height='100%'/>");
-                  
-                }
-                else {
-                    var url = '@Url.Action("viewFile", "NormalUsers")' + "?fullpath=" + fullpath;
-                    //var panelid = "#f" + i;
-                    //$(panelid).panel('refresh', url);
-                    var filepanel = $('#f' + i);
-                    filepanel.panel({
-                        width: 500,
-                        height: 250,
-                        title: filename,
-                        href:url
-                    });
-                    filepanel.slideDown();
-                    //filepanel.panel('refresh', url);
-                }
-            }
-        }
+        
+        NextFile(0);
+            //for (var i = 1; i <=rows.length; i++) {
+                
+            //}
+        
     }
 
     
