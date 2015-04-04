@@ -13,10 +13,16 @@
     </div>
 </div>
 
-<div style="padding-left:10px;float:left;width:45%">
+<div id="showfiles"style="padding-left:10px;float:left;width:45%">
     <div id="filepanel"  style="float:left;display:block;height:500px">
-    </div>    
+    </div>  
+    <a id="prefile" style="margin-left:45%" href="#"></a>  
+    <a id="nextfile" href="#"></a>
+    
+    @*<a id="prefile" class="easyui-linkbutton" href="#" data-options="iconCls:'icon-undo'" style="width:80px">Pre</a>
+    <a id="nextfile" class="easyui-linkbutton" href="#" data-options="iconCls:'icon-redo'" style="width:80px">Next</a>*@
 </div>
+
 
 <div id="dlg" class="easyui-dialog" title="Warning" style="width:300px;height:100px;padding:10px"
      data-options="
@@ -30,10 +36,6 @@
     
 </div>
 
-<div id="tt">
-    <a href="javascript:void(0)" class="icon-add" onclick="javascript:alert('add')"></a>
-    <a href="javascript:void(0)" class="icon-edit" onclick="javascript:alert('edit')"></a>   
-</div>
 
 <script>
 
@@ -45,6 +47,7 @@
 
     $(document).on("pageload", function () {
         $('#filepanel').hide();
+       
     });
 
     $("#filestree").treegrid({
@@ -135,6 +138,28 @@
 
     function NextFile(i) {
         var rows = $("#filestree").treegrid("getSelections");
+        if (i < rows.length-1) ShowFile(i + 1);
+    }
+    function PreFile(i) {
+        var rows = $("#filestree").treegrid("getSelections");
+        if (i > 0) ShowFile(i - 1);
+    }
+    function ShowFile(i) {
+        var rows = $("#filestree").treegrid("getSelections");
+        $('#nextfile').linkbutton({
+            iconCls: 'icon-redo',
+            text:'Next'
+        });
+        $('#nextfile').bind('click', function () {
+            NextFile(i);
+        });
+        $('#prefile').linkbutton({
+            iconCls: 'icon-undo',
+            text: 'Pre'
+        });
+        $('#prefile').bind('click', function () {
+            PreFile(i);
+        });
         var fullpath = rows[i].FullPath;
         var filename = fullpath.substr(fullpath.lastIndexOf("\\") + 1);
         if (filename.indexOf(".jpg") != -1 || filename.indexOf(".png") != -1) {
@@ -142,19 +167,10 @@
             filepanel.panel({
                 width: 530,
                 height: 500,
-                title: filename,
-                tools:[{
-                    iconCls:'icon-undo',
-                    handler:function(){alert('new')}
-                },
-                {
-                    iconCls: 'icon-redo',
-                    handler: function () { alert('new') }
-                 }
-                ],
+                title: filename,               
                 href: null
             });
-            filepanel.slideDown();
+            
             var path = fullpath.substr(fullpath.indexOf("~") + 2);
             filepanel.html("<img src='" + path + "' width='100%' height='100%'/>");
 
@@ -166,18 +182,9 @@
                 width: 530,
                 height: 500,
                 title: filename,
-                href: url,
-                tools: [{
-                    iconCls: 'icon-undo',
-                    handler: function () { alert('new') }
-                },
-                {
-                    iconCls: 'icon-redo',
-                    handler: function () { alert('new') }
-                }
-                ],
+                href: url,                
             });
-            filepanel.slideDown();
+            
         }
     }
     function ViewFile() {
@@ -188,7 +195,7 @@
             $('#dlg').html("Please choose at least one file.");
         }
         
-        NextFile(0);
+        ShowFile(0);
             //for (var i = 1; i <=rows.length; i++) {
                 
             //}

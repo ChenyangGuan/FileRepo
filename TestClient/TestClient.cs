@@ -118,9 +118,9 @@ namespace TestClient
     }
     //----< open file on client for Reading >------------------------------
 
-    FileStream openClientUpLoadFile(string fileName)
+    FileStream openClientUpLoadFile(string fileName,string path)
     {
-      string path = "../../UpLoad/";
+     // string path = "../../uploads/";
 
       FileStream up;
       try
@@ -191,6 +191,11 @@ namespace TestClient
       Console.Write("\n  Response status = {0}\n", status);
       down.Close();
     }
+
+    async Task uploadFileAsync(string filename, string path)
+    {
+        await Task.Run(() => upLoadFile(filename,path));
+    }
     //----< upLoad File >--------------------------------------------------
     /*
      *  Open server file for writing
@@ -200,7 +205,7 @@ namespace TestClient
      *  Close server file
      *  Close client file
      */
-    void upLoadFile(string filename)
+    void upLoadFile(string filename,string path)
     {
       Console.Write("\n  Attempting to upload file {0}", filename);
       Console.Write("\n --------------------------------------\n");
@@ -210,7 +215,7 @@ namespace TestClient
 
       openServerUpLoadFile(filename);
       Console.Write("\n  Response status = {0}\n", status);
-      FileStream up = openClientUpLoadFile(filename);
+      FileStream up = openClientUpLoadFile(filename,path);
 
       Console.Write("\n  Sending Post requests to send blocks:");
       Console.Write("\n ---------------------------------------");
@@ -240,46 +245,179 @@ namespace TestClient
       Console.Write("\n  Response status = {0}\n", status);
       up.Close();
     }
+
+    static List<string> GetUploadFiles(string path)
+    {
+        DirectoryInfo dir;
+        if(path=="")
+         dir = new DirectoryInfo(@"../../uploads");
+        else  dir = new DirectoryInfo(@path);
+        int index = 1;
+        List<string> fileset = new List<string>();
+        foreach (FileInfo f in dir.GetFiles())
+        {
+            string fullname = f.FullName;
+            string fn = fullname.Substring(fullname.LastIndexOf("\\") + 1);
+            fileset.Add(fn);
+            Console.Write("\n {0}. {1}", index, fn);
+            index++;
+        }
+        return fileset;
+    }
+    
+    static void upload(TestClient tc)
+    {
+
+        Console.Write("\n  Choose available file to upload:");
+        Console.Write("\n ------------------------------------------");
+        string path = "";
+        Console.Write("\n Enter the file path: ");
+        path=Console.ReadLine();
+        List<string> fileset = GetUploadFiles(path);
+        int choice = 0;
+        while (true)
+        {
+            Console.Write("\n Please choose a file to upload:  ");
+            try
+            {
+                 choice = int.Parse(Console.ReadLine());
+            }
+            catch (System.FormatException)
+            {
+                Console.Write("\n Error enter, try again.  ");
+                continue;
+            }
+            if (choice > fileset.Count)
+            {
+                Console.Write("\n Error enter, try again.  ");
+                continue;
+            }
+            else break;
+        }
+        
+        string uploadFile = fileset[choice - 1];
+        tc.upLoadFile(uploadFile,path);
+        Console.Write("\n Successful !!!!  ");
+        Console.ReadLine();
+    }
+     public string[] GetdownloadFiles(string path,int index)
+    {
+        string[] fileset;
+        message = new HttpRequestMessage();
+        message.Method = HttpMethod.Get;
+        message.RequestUri = new Uri(urlBase+"?fullpath="+path+"&&ford=true");
+        Task<HttpResponseMessage> task = client.SendAsync(message);
+        HttpResponseMessage response1 = task.Result;
+        response = task.Result;
+        status = response.ReasonPhrase;
+        fileset = Newtonsoft.Json.JsonConvert.DeserializeObject<string[]>(response1.Content.ReadAsStringAsync().Result);        
+        foreach (string f in fileset)
+        {
+            Console.Write("\n <file> {0}. {1}", index, f);
+        }
+        return fileset;
+    }
+
+
+     public string[] GetdownloadDir(string path)
+     {
+         string[] dirset;
+         message = new HttpRequestMessage();
+         message.Method = HttpMethod.Get;
+         message.RequestUri = new Uri(urlBase+"?fullpath="+path+"&&ford=false");
+         Task<HttpResponseMessage> task = client.SendAsync(message);
+         HttpResponseMessage response1 = task.Result;
+         response = task.Result;
+         status = response.ReasonPhrase;
+         int index = 1;
+         dirset = Newtonsoft.Json.JsonConvert.DeserializeObject<string[]>(response1.Content.ReadAsStringAsync().Result);
+         foreach (string f in dirset)
+         {
+             Console.Write("\n <dir> {0}. {1}", index++, f);
+         }
+         return dirset;
+     }
+    static void download(TestClient tc)
+    {
+
+        Console.Write("\n  Choose available file to download:");
+        Console.Write("\n ------------------------------------------");
+        string dirpath = "../../uploads/";
+        
+        string downloadf = "";
+        while (true)
+        {
+            
+            string[] dirset = tc.GetdownloadDir(dirpath);
+            int index = dirset.Length;
+            string[] fileset = tc.GetdownloadFiles(dirpath, ++index);
+            int choice = 0;
+            int top = index+fileset.Length;
+            Console.Write("\n Please choose a file to download or open a directory:  ");
+            try
+            {
+                 choice = int.Parse(Console.ReadLine());
+            }
+            catch (System.FormatException)
+            {
+                continue;
+            }
+
+            if (choice < index)
+            {
+                dirpath += dirset[choice - 1] + "/";
+                continue;
+            }
+            else if (choice < top)
+            {
+                downloadf = fileset[choice - 1];
+                break;
+            }
+            else continue;
+        }
+        tc.downLoadFile(downloadf);
+        Console.Write("\n Successful !!!!  ");
+        Console.ReadLine();
+    }
+
     static void Main(string[] args)
     {
-      Console.Write("\n  Demonstrating WebApi File Service and Test Client");
-      Console.Write("\n ===================================================\n");
+      
  
-      TestClient tc = new TestClient("http://localhost:55664/FileService/api/File");
-
-      string[] files = null;
-      for(int i=0; i<10; ++i)
-      {
+      TestClient tc = new TestClient("http://localhost:55664/FileService/api/File");    
         Console.Write("\n  Waiting for server to initialize\n");
         Thread.Sleep(100);
-        try
-        {
-          Console.Write("\n  Sending Get request for available files:");
-          Console.Write("\n ------------------------------------------");
+        int num = 0;
+            while (true)
+            {
+                Console.Write("\n  Demonstrating WebApi File Service and Test Client");
+                Console.Write("\n ===================================================\n");
+                Console.Write("\n *****1. Upload File*****\n");
+                Console.Write("\n *****2. Download File*****\n");            
+                Console.Write("\n *****3. Exit*****\n");
+                Console.Write("\n What you want:  ");
+                try
+                {
+                    num = int.Parse(Console.ReadLine());
+                }
+                catch (System.FormatException)
+                {
+                    Console.Clear();
+                    continue;
+                }
+                switch (num)
+                {
+                    case 1: upload(tc);break;
+                    case 2: download(tc); break;                    
+                    case 3: Environment.Exit(0); break;
+                    default: Console.Clear(); continue;
 
-          files = tc.getAvailableFiles();
-          Console.Write("\n  Response status = {0}", tc.status);
-          foreach (string file in files)
-            Console.Write("\n  {0}", file);
-          Console.Write("\n");
+                }
+                Console.Clear();
+            }
+        
 
-          break;
-        }
-        catch
-        {
-          continue;
-        }
-      }
-      if (files.Length == 0)
-        return;
-
-      string filename = files[files.Length - 1];
-      tc.downLoadFile(filename);
-
-      string uploadFile = "foobar.txt";
-      tc.upLoadFile(uploadFile);
-
-      Console.Write("\n\n");
+     
     }
   }
 }

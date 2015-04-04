@@ -24,6 +24,29 @@ namespace FileService.Controllers
             return files;
         }
 
+        public IEnumerable<string> Get(string fullpath,bool ford)
+        {
+            // available Dir
+            
+               string path = System.Web.HttpContext.Current.Server.MapPath(fullpath);
+               if (!ford)
+               {
+                   string[] directories = Directory.GetDirectories(path);
+                   for (int i = 0; i < directories.Length; ++i)
+                       directories[i] = directories[i].Substring(directories[i].LastIndexOf("\\") + 1);
+                   return directories;
+               }
+               else
+               {
+                   string[] files = Directory.GetFiles(path);
+                   for (int i = 0; i < files.Length; ++i)
+                       files[i] = Path.GetFileName(files[i]);
+                   return files;
+               }
+            
+            
+        }
+
         //----< GET api/File?fileName=foobar.txt&open=true >---------------
         //----< attempt to open or close FileStream >----------------------
 
@@ -49,17 +72,17 @@ namespace FileService.Controllers
             try
             {
                 FileStream fs;
-                string path = System.Web.HttpContext.Current.Server.MapPath("~");
+                string path = System.Web.HttpContext.Current.Server.MapPath("../../");
                 if (open == "download")  // attempt to open requested fileName
                 {
-                    path = path + "DownLoad";
+                    path = path + "uploads";
                     string currentFileSpec = path + "\\" + fileName;
                     fs = new FileStream(currentFileSpec, FileMode.Open);
                     session.saveStream(fs, sessionId);
                 }
                 else if (open == "upload")
                 {
-                    path = path + "UpLoad";
+                    path = path + "uploads";
                     string currentFileSpec = path + "\\" + fileName;
                     fs = new FileStream(currentFileSpec, FileMode.OpenOrCreate);
                     session.saveStream(fs, sessionId);
