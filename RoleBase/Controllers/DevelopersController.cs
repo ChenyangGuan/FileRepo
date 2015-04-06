@@ -12,6 +12,8 @@ namespace RoleBase.Controllers
     [Authorize(Roles = "Developer")]
     public class DevelopersController : Controller
     {
+        private int id;
+        public DevelopersController() { id = 0; }
         //
         // GET: /Developers/
         public ActionResult Index()
@@ -61,19 +63,60 @@ namespace RoleBase.Controllers
             
         }
 
-
-        //GET
-        public string ShowDependency(string filename)
+       
+        public string[] GetFiles(string str)
         {
+            string[] result;
+            result = str.Split(';');
+            result=result.Take(result.Count() - 1).ToArray();
+            return result;
+        }
+        public void SearchDepen(string filename,XDocument doc,ref List<Files>dataset){
+            filename = filename.Substring(filename.LastIndexOf("\\") + 1);
+            var tmp = doc.Element("FileDependency");
+            IEnumerable<XElement> fn =
+    from el in tmp.Elements() select el;
+    
+            
+            foreach (var f in fn)
+            {
+                if (f.Element("FileName").Value == filename)
+                {
+                    var denpendentFiles = f.Element("Dependencies").Elements("FileFullPath");
+                    foreach (var defile in denpendentFiles)
+                    {                        
+                        string fileP = defile.Value;
+                        FileInfo file = new FileInfo(Server.MapPath(fileP));
+                        Files newfile = new Files(++id, (file.Length / 1024).ToString() + "KB", file.Name,fileP,null,"",filename);
+                        dataset.Add(newfile);
+                    }
+                }
+            }
+           
+
+    }
+        //GET
+        public ActionResult ShowDependency(string filename)
+        {
+            string[] fileset = GetFiles(filename);
+            
             string path = System.Web.HttpContext.Current.Server.MapPath("~\\App_Data\\FileDependency.xml");
-            XDocument doc = XDocument.Load(path);
-            var fl = doc.Element("FileDependency").Element("FileList");
-            XElement filetag = new XElement("File");
-            XElement FileName = new XElement("FileName");
-            XElement FullPath = new XElement("FullPath");
-            XElement Dependencies = new XElement("Dependencies");
-            XElement FileFullPath = new XElement("FileFullPath");
-            return "";
+            XDocument doc;
+            try
+            {
+               doc = XDocument.Load(path);
+            }
+            catch (System.IO.FileNotFoundException)
+            {
+                return null;
+            }
+            List<Files> dataset = new List<Files>();
+            foreach (string f in fileset)
+            {
+               SearchDepen(f,doc,ref dataset);
+            }
+
+            return Json(dataset, JsonRequestBehavior.AllowGet);
         }
 
 	}

@@ -13,6 +13,7 @@
     </div>
 </div>
 
+
 <div id="showfiles"style="padding-left:10px;float:left;width:45%">
     <div id="filepanel"  style="float:left;display:block;height:500px">
     </div>  
@@ -36,6 +37,10 @@
     
 </div>
 
+<script type="text/javascript" src="http://www.jeasyui.com/easyui/datagrid-groupview.js"></script>
+<div id="dependencywindow" class="easyui-window" title="Modal Window" data-options="modal:true,closed:true,iconCls:'icon-dependency'" style="width:500px;height:300px;padding:10px;">
+    <table id="denpencytable" class="easyui-datagrid" title="File Dependency" style="width:500px;height:300px"></table>
+</div>
 
 <script>
 
@@ -79,8 +84,6 @@
                 if (childNodes.length > 0) {
                     if ($('#ck' + row.id).is(":checked") == true) {
                         for (i = 0; i < childNodes.length; i++) {
-
-
                             $('#ck' + childNodes[i].id).prop("checked", true);
                             $("#filestree").treegrid('select', childNodes[i].id);
 
@@ -211,16 +214,28 @@
             $('#dlg').html("Please choose at least one file.");
         }
         else {
-            var files;
+            var files="";
             for (var i = 0; i < rows.length; i++) {
                 files += rows[i].FullPath + ";";
             }
-            $.ajax({
-                url: '@Url.Action("ShowDependency","Developers")'+"?filename="+files,
-
-            }).done(function (msg) {
-                alert(msg);
+            $('#denpencytable').datagrid({
+                url: '@Url.Action("ShowDependency","Developers")' + "?filename=" + files,
+                columns: [[
+                    { field: 'FileName', title: 'FileName', width: 100 },
+                    { field: 'FullPath', title: 'FullPath', width: 300 },
+                   
+                ]],
+                view: groupview,
+                collapsible: true,
+                rownumbers: true,
+                groupField: 'GroupBound',
+                groupFormatter: function (value, rows) {
+                    return value;
+                }
+                
             });
+            $('#dependencywindow').window('open');
+            
         }
     }
 

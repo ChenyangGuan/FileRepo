@@ -60,7 +60,7 @@ namespace RoleBase.Controllers
             Files f;
             f = new Files();
             int index = 1;
-            Dictionary<String, Object> result = new Dictionary<string, object>();
+            //Dictionary<String, Object> result = new Dictionary<string, object>();
             string rootpath = Server.MapPath("~/Uploads/");
             f = Searchfile(rootpath, index);
             dataset.Add(f);
