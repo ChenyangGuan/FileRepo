@@ -72,6 +72,7 @@ namespace RoleBase.Controllers
             return result;
         }
         public void SearchDepen(string filename,XDocument doc,ref List<Files>dataset){
+            string fp = filename;
             filename = filename.Substring(filename.LastIndexOf("\\") + 1);
             var tmp = doc.Element("FileDependency");
             IEnumerable<XElement> fn =
@@ -80,20 +81,20 @@ namespace RoleBase.Controllers
             
             foreach (var f in fn)
             {
-                if (f.Element("FileName").Value == filename)
+                if (f.Element("FullPath").Value==fp)
                 {
                     var denpendentFiles = f.Element("Dependencies").Elements("FileFullPath");
                     foreach (var defile in denpendentFiles)
                     {                        
                         string fileP = defile.Value;
                         FileInfo file = new FileInfo(Server.MapPath(fileP));
-                        Files newfile = new Files(++id, (file.Length / 1024).ToString() + "KB", file.Name,fileP,null,"",filename);
+                        Files newfile = new Files(++id, (file.Length / 1024).ToString() + "KB", file.Name,fileP,null,"",filename,fp);
                         dataset.Add(newfile);
                     }
                 }
             }
-           
 
+            id = 0;
     }
         //GET
         public ActionResult ShowDependency(string filename)
@@ -117,6 +118,71 @@ namespace RoleBase.Controllers
             }
 
             return Json(dataset, JsonRequestBehavior.AllowGet);
+        }
+
+        //GET
+        public ActionResult ShowFiles(string files)
+        {
+            string[] fileset = GetFiles(files);          
+            List<Files> dataset = new List<Files>();
+            foreach (string fileP in fileset)
+            {
+                FileInfo file = new FileInfo(Server.MapPath(fileP));
+                Files newfile = new Files(++id, (file.Length / 1024).ToString() + "KB", file.Name, fileP, null, "");
+                dataset.Add(newfile);
+            }
+            id = 0;
+            return Json(dataset, JsonRequestBehavior.AllowGet);
+        }
+
+
+        private void DeleteDepen(ref string filename, ref string deletefile, XDocument doc,ref string path)
+        {
+            var tmp = doc.Element("FileDependency");
+            IEnumerable<XElement> fn =
+    from el in tmp.Elements() select el;
+            foreach (var f in fn)
+            {
+                if (f.Element("FullPath").Value == filename)
+                {
+                    var denpendentFiles = f.Element("Dependencies").Elements("FileFullPath");
+                    foreach (var defile in denpendentFiles)
+                    {
+                        if (defile.Value == deletefile) 
+                            defile.Remove();
+                    }
+                }
+            }
+            doc.Save(path);
+            
+        }
+
+        //GET
+        public string DeleteDependency(string files)
+        {
+            string result = "Error";
+            string path = System.Web.HttpContext.Current.Server.MapPath("~\\App_Data\\FileDependency.xml");
+            XDocument doc;
+            try
+            {
+                doc = XDocument.Load(path);
+            }
+            catch (System.IO.FileNotFoundException)
+            {
+                return result;
+            }
+            string[] request = GetFiles(files);
+            string filename;
+            string deletefile;
+            foreach (string re in request)
+            {
+                filename = re.Substring(0, re.IndexOf("::"));
+                deletefile = re.Substring(re.IndexOf("::") + 2);
+                DeleteDepen(ref filename, ref deletefile, doc,ref path);
+                
+            }
+            result = "Success";
+            return result;
         }
 
 	}
