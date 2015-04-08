@@ -64,15 +64,16 @@ namespace RoleBase.Controllers
         }
 
        
-        public string[] GetFiles(string str)
+        public string[] GetFiles(string str,char spli)
         {
             string[] result;
-            result = str.Split(';');
+            result = str.Split(spli);
             result=result.Take(result.Count() - 1).ToArray();
             return result;
         }
         public void SearchDepen(string filename,XDocument doc,ref List<Files>dataset){
             string fp = filename;
+            bool ExistFile = false;
             filename = filename.Substring(filename.LastIndexOf("\\") + 1);
             var tmp = doc.Element("FileDependency");
             IEnumerable<XElement> fn =
@@ -83,6 +84,13 @@ namespace RoleBase.Controllers
             {
                 if (f.Element("FullPath").Value==fp)
                 {
+                    ExistFile = true;
+                    if (f.Element("Dependencies").Value == "")
+                    {
+                        Files newfile = new Files(++id, "0KB", "NULL", "NULL", null, "", filename, fp);
+                        dataset.Add(newfile);
+                        continue;
+                    }
                     var denpendentFiles = f.Element("Dependencies").Elements("FileFullPath");
                     foreach (var defile in denpendentFiles)
                     {                        
@@ -93,13 +101,18 @@ namespace RoleBase.Controllers
                     }
                 }
             }
+            if (!ExistFile)
+            {
+                Files newfile = new Files(++id,"0KB", "NULL", "NULL", null, "", filename, fp);
+                dataset.Add(newfile);
+            }
 
             id = 0;
     }
         //GET
         public ActionResult ShowDependency(string filename)
         {
-            string[] fileset = GetFiles(filename);
+            string[] fileset = GetFiles(filename,';');
             
             string path = System.Web.HttpContext.Current.Server.MapPath("~\\App_Data\\FileDependency.xml");
             XDocument doc;
@@ -109,7 +122,11 @@ namespace RoleBase.Controllers
             }
             catch (System.IO.FileNotFoundException)
             {
-                return null;
+                doc = new XDocument();
+                XElement fd = new XElement("FileDependency");
+                doc.Add(fd);
+                doc.Save(path);
+                doc = XDocument.Load(path);
             }
             List<Files> dataset = new List<Files>();
             foreach (string f in fileset)
@@ -123,7 +140,7 @@ namespace RoleBase.Controllers
         //GET
         public ActionResult ShowFiles(string files)
         {
-            string[] fileset = GetFiles(files);          
+            string[] fileset = GetFiles(files,';');          
             List<Files> dataset = new List<Files>();
             foreach (string fileP in fileset)
             {
@@ -171,7 +188,7 @@ namespace RoleBase.Controllers
             {
                 return result;
             }
-            string[] request = GetFiles(files);
+            string[] request = GetFiles(files,';');
             string filename;
             string deletefile;
             foreach (string re in request)
@@ -185,5 +202,98 @@ namespace RoleBase.Controllers
             return result;
         }
 
+        private void SpecifyDepen(string filename, ref string Depenfile, XDocument doc, ref string path)
+        {
+            string[] Depenfiles = GetFiles(Depenfile, ';');
+            var tmp = doc.Element("FileDependency");
+            IEnumerable<XElement> fn =
+    from el in tmp.Elements() select el;
+            bool ExistFile = false;
+            bool ExistDepen = false;
+            foreach (var f in fn)
+            {
+                if (f.Element("FullPath").Value == filename)
+                {
+                    ExistFile = true;
+                    var denpendentFiles = f.Element("Dependencies").Elements("FileFullPath");
+                    var dependency = f.Element("Dependencies");
+                    foreach (string df in Depenfiles)
+                    {
+                        foreach (var defile in denpendentFiles)
+                        {
+                            if (df == defile.Value)
+                            {
+                                ExistDepen = true;
+                                break;
+                            }
+                        }
+                        if (!ExistDepen && df != filename)
+                        {
+                            XElement newdepen = new XElement("FileFullPath");
+                            newdepen.Value = df;
+                            dependency.Add(newdepen);
+                            
+                        }
+                        ExistDepen = false;
+                    }
+
+
+                   
+                }
+            }
+            if (!ExistFile)
+            {
+                XElement newfile = new XElement("File");
+                XElement newfileName = new XElement("FileName");
+                XElement newfileFullPath = new XElement("FullPath");
+                XElement depen = new XElement("Dependencies");
+                foreach (string df in Depenfiles)
+                {
+                    if (df != filename)
+                    {
+                        XElement newdepen = new XElement("FileFullPath");
+                        newdepen.Value = df;
+                        
+                        
+                        depen.Add(newdepen);
+                        
+
+                    }
+                }
+                newfileFullPath.Value = filename;
+                newfileName.Value = filename.Substring(filename.IndexOf("\\") + 1);
+                newfile.Add(newfileName);
+                newfile.Add(newfileFullPath);
+                newfile.Add(depen);
+                tmp.Add(newfile);
+            }
+            doc.Save(path);
+        }
+
+        //GET
+
+        public string SpecifyDependency(string files)
+        {
+            string result = "Successful";
+            string path = System.Web.HttpContext.Current.Server.MapPath("~\\App_Data\\FileDependency.xml");
+            XDocument doc;
+            try
+            {
+                doc = XDocument.Load(path);
+            }
+            catch (System.IO.FileNotFoundException)
+            {
+                return "Error";
+            }
+            string SpeFile = files.Substring(0, files.IndexOf("::"));
+            string SpeDepen = files.Substring(files.IndexOf("::") + 2);
+            string[] SpeFiles = GetFiles(SpeFile, '|');
+            foreach (string f in SpeFiles)
+            {
+                SpecifyDepen(f, ref SpeDepen, doc, ref path);
+            }
+            
+            return result;
+        }
 	}
 }

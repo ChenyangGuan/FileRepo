@@ -38,10 +38,10 @@
 </div>
 
 <script type="text/javascript" src="http://www.jeasyui.com/easyui/datagrid-groupview.js"></script>
-<div id="dependencywindow" class="easyui-window" title="Dependencies Window" data-options="modal:true,closed:true,iconCls:'icon-dependency'" style="width:500px;height:300px;padding:10px;">
-    <div id="tt" class="easyui-tabs" style="width:500px;height:300px;">
+<div id="dependencywindow" class="easyui-window" title="Dependencies Window" data-options="modal:true,closed:true,iconCls:'icon-dependency'" style="width:600px;height:500px;padding:10px;">
+    <div id="tt" class="easyui-tabs" style="width:600px;height:500px;">
         <div title="Show Dependencies" data-options="iconCls:'icon-dependency'">
-            <table id="denpendencytable" class="easyui-datagrid" title="File Dependency" style="width:500px;height:300px"></table>
+            <table id="denpendencytable" class="easyui-datagrid" title="File Dependency" style="width:600px;height:500px"></table>
             <div id="denpendencytb">
                 <a href="#" class="easyui-linkbutton" id="adddepend"iconcls="icon-add" plain="true" onclick="AddDependency()">Add Dependencies</a>
                 <a href="#" class="easyui-linkbutton" iconcls="icon-cancel" plain="true" onclick="DeleteDependency()">Delete Dependencies</a>
@@ -236,8 +236,7 @@
 
                 ]],
                 toolbar: '#denpendencytb',
-                onSelect: function () { $('#adddepend').linkbutton('disable'); },
-                onUnselect: function () { $('#adddepend').linkbutton('enable'); },
+               
                 view: groupview,
                 collapsible: true,
                 rownumbers: true,
@@ -258,6 +257,7 @@
         if (rows.length == 0) {
             $('#dlg').dialog('open');
             $('#dlg').html("Please choose at least one file.");
+            return;
         }
         var Postinfo = "";
         for (var i = 0; i < rows.length; i++) {
@@ -294,16 +294,27 @@
         }
 
 
-        function AddDependency(){
-            var contents = '<table id="newdepentable" class="easyui-datagrid" title="Add Dependency" style="width:500px;height:300px"></table><div id="newdepentb"><a href="#" class="easyui-linkbutton" id="choosedepen" iconcls="icon-add" plain="true" onclick="ChooseDependency()">Choose Dependencies</a></div>'
+        function AddDependency() {    
+            var contents = '<div class="easyui-tabs" id="subtabs" data-options="fit:true,plain:true"><div title="Choose Files" ><table id="newdepentable" class="easyui-datagrid" title="Add Dependency" style="width:600px;height:500px"></table><div id="newdepentb"><a href="#" class="easyui-linkbutton" id="choosedepen" iconcls="icon-add" plain="true" onclick="ChooseDependency()">Choose Dependencies</a></div></div></div>';
+            $('#tt').tabs({
+                onAdd: function () {
+                    $('#tt').tabs('disableTab', 0);
+                },
+                onClose: function () {
+                    $('#tt').tabs('enableTab', 0);
+                }
+            });
             $('#tt').tabs('add', {
                 title: 'Add Dependencies',
                 content: contents,
 
                 closable: true,
                 iconCls: 'icon-add',
+                
 
             });
+
+            
             var rows = $('#denpendencytable').datagrid('getRows');
             var Postinfo = "";
             for(var i=0;i<rows.length;i++){
@@ -337,5 +348,63 @@
                 $('#dlg').dialog('open');
                 $('#dlg').html("Please choose at least one file.");
             }
+            var contents = '<table title="Files Browser" class="easyui-treegrid" style="width:100%;height:500px" id="DependenciesTree"></table><div id="DependenciesTreetb"><a href="#" class="easyui-linkbutton" iconcls="icon-ok" plain="true" onclick="SpecifyDependencies()">Confirm</a></div>'
+            $('#subtabs').tabs('add', {
+                title: 'Choose Dependencies',
+                content: contents,
+                closable: true,
+                iconCls: 'icon-add',
+            });
+
+            $("#DependenciesTree").treegrid({
+                method: 'get',
+                rownumbers: false,
+                idField: 'id',
+                treeField: 'FileName',
+                url: '@Url.Action("Getjson", "NormalUsers")',
+                columns: [[
+                       
+                        {
+                            title: 'FileName', field: 'FileName',width: 200
+                        },
+                        {
+                            title: 'Size', field: 'Size', width: 100, align: 'center',
+
+                        },
+                        { title: 'FullPath', field: 'FullPath', width: 320 },
+                ]],
+                singleSelect: false,
+                toolbar: '#DependenciesTreetb',
+              
+            });
+        }
+
+        function SpecifyDependencies() {
+            var files = $('#newdepentable').datagrid('getSelections');
+            var tmpurl="";
+            var depens=$("#DependenciesTree").treegrid('getSelections');
+            for(var i=0;i<files.length;i++){
+                tmpurl += files[i].FullPath + "|";
+            }
+            tmpurl += "::";
+            for (var i = 0; i < depens.length; i++) {
+                tmpurl += depens[i].FullPath + ";";
+            }
+            $.ajax({
+                url: '@Url.Action("SpecifyDependency","Developers")' + "?files=" + tmpurl,
+
+            })
+   .done(function (data) {
+       if (data == "Successful") {
+           $.messager.show({
+               title: 'Successful',
+               msg: 'Add Denpendencies complete.',
+               timeout: 5000,
+               showType: 'slide'
+           });
+           $('#tt').tabs('close', 'Add Dependencies');
+           $('#denpendencytable').datagrid('reload');
+       }
+   });
         }
     </script>
