@@ -42,10 +42,17 @@ namespace RoleBase.Controllers
                 dir.AddChild(newdir);
 
             }
+            bool empty = true;
             foreach (FileInfo file in dirinfo.GetFiles("*.*"))
             {
+                empty = false;
                 Files newfile = new Files(++id, (file.Length / 1024).ToString() + "KB", file.Name, Wrapfullpath(file.FullName));
                 //dir.state = "closed";
+                dir.AddChild(newfile);
+            }
+            if (empty)
+            {
+                Files newfile = new Files(++id,"0KB", "NULL","NULL");
                 dir.AddChild(newfile);
             }
             return dir;
@@ -76,8 +83,16 @@ namespace RoleBase.Controllers
         public ActionResult viewFile(string fullpath)
         {
             fullpath = Server.MapPath(fullpath);
-            FileStream fs = new FileStream(fullpath, FileMode.Open, FileAccess.Read);
-            return File(fs, "application/text");
+            try
+            {
+                FileStream fs = new FileStream(fullpath, FileMode.Open, FileAccess.Read);
+                return File(fs, "application/text");
+            }
+            catch
+            {
+                return null;
+            }
+            
            
         }
 

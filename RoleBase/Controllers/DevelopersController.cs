@@ -33,20 +33,23 @@ namespace RoleBase.Controllers
         //
         // POST: /Developers/
         [HttpPost]
-        public string Index(Fileset f)
+        public string Index(Fileset f,string path)
         {
             if (f.files.Count()>0)
             {
-                
-                var folderpath = Server.MapPath("~/Uploads/"+GetUser());
+                string folderpath="";
+                if (path == "")
+                    folderpath = Server.MapPath("~/Uploads/" + GetUser());
+                else
+                    folderpath = Server.MapPath(path);
                 if (!Directory.Exists(folderpath)) Directory.CreateDirectory(folderpath);
                 foreach (var file in f.files)
                 {
                     if (file!=null && file.ContentLength > 0 )
                     {
                         var filename = Path.GetFileName(file.FileName);
-                        var path = Path.Combine(folderpath, filename);
-                        file.SaveAs(path);
+                        var savepath = Path.Combine(folderpath, filename);
+                        file.SaveAs(savepath);
                     }
                     else
                     {
@@ -295,5 +298,27 @@ namespace RoleBase.Controllers
             
             return result;
         }
+        //GET
+        public string CreateDir(string foldername,string path="DefaultPath")
+        {
+            string result = "Error";
+            if (path == "DefaultPath")
+            {
+                path = Server.MapPath("~/Uploads/");
+                
+            }
+            try
+            {
+                path = Server.MapPath(path);
+                Directory.CreateDirectory(path+"\\" +foldername);
+            }
+            catch
+            {
+                return result;
+            }
+            result = "Successful";
+            return result;
+        }
+
 	}
 }

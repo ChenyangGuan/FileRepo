@@ -4,6 +4,9 @@
 .icon-add{
 	background:url('icons/edit_add.png') no-repeat center center;
 }
+.icon-upload{
+	background:url('icons/upload.png') no-repeat center center;
+}
 .icon-edit{
 	background:url('icons/pencil.png') no-repeat center center;
 }
@@ -27,6 +30,9 @@
 }
 .icon-dependency{
     background:url('icons/dependency.png') no-repeat center center;
+}
+.icon-folder{
+    background:url('icons/folder.png') no-repeat center center;
 }
 .icon-no{
 	background:url('icons/no.png') no-repeat center center;
