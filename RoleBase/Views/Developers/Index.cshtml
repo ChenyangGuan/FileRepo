@@ -7,7 +7,7 @@
 @*<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.js"></script>*@
 <script src="http://malsup.github.com/jquery.form.js"></script>
 
-    <h2>Developer Page</h2>
+    <h2>Repository Development</h2>
 <div id="uploadwindow" class="easyui-window" title="Upload Files" data-options="iconCls:'icon-upload',closed:true" style="width:500px;height:200px;padding:10px;">
     @using (Ajax.BeginForm(null, null, new AjaxOptions() { HttpMethod = "POST" }, new { enctype = "multipart/form-data" }))
     {
@@ -316,6 +316,20 @@
         }
 
         function CreateConfirm() {
+            var foldname = $('#FolderN').textbox('getText');
+            var AllNumIsSame = new Array("’", "”", "。", ";", ":", "<", ">", "?", "|", "!", "#", "$", "%", "^", "&", "*", "(", ")", "+", "-", ".");
+            for (var i = 0; i < AllNumIsSame.length; i++) {
+                if (foldname.indexOf(AllNumIsSame[i]) != -1) {
+                    $.messager.show({
+                        title: 'Error',
+                        msg: 'Error. Can not Contain ' + AllNumIsSame[i],
+                        timeout: 5000,
+                        showType: 'slide'
+                    });
+                    return;
+                }
+            }
+
             var ParentFolder = $("#filestree").treegrid("getSelections");
             var url = '@Url.Action("CreateDir", "Developers")';
             var path = "";
@@ -325,7 +339,7 @@
                 else ParentFolder = ParentFolder[0];
                 path = ParentFolder.FullPath;
             }
-            var foldname = $('#FolderN').textbox('getText');
+            
             if (path == "") url += "?foldername=" + foldname;
             else url += "?foldername=" + foldname + "&&path=" + path;
             $.ajax({

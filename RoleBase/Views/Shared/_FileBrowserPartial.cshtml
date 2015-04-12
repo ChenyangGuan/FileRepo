@@ -10,7 +10,12 @@
             <a href="#" class="easyui-linkbutton" iconcls="icon-upload" plain="true" onclick="Upload()">Upload Files</a>
             <a href="#" class="easyui-linkbutton" iconcls="icon-folder" plain="true" onclick="CreateFolder()">Create Folder</a>
             <a href="#" class="easyui-linkbutton" iconcls="icon-dependency" plain="true" onclick="ShowDependency()">Show Dependencies</a>
-            
+
+        }
+        else if (User.IsInRole("Admin"))
+        {
+            <a href="#" class="easyui-linkbutton" iconcls="icon-cancel" plain="true" onclick="DeleteFiles()">Delete Files</a>
+            <a href="#" class="easyui-linkbutton" iconcls="icon-edit" plain="true" onclick="RenameFolder()">Rename Folder</a>
         }
         <a href="#" class="easyui-linkbutton" iconcls="icon-reload" plain="true" onclick="Refreshtree()">Refresh</a>
     </div>

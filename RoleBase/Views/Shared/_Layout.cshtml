@@ -28,16 +28,17 @@
                     <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
 
                     @if (Request.IsAuthenticated && User.IsInRole("Admin")) {
-                        <li>@Html.ActionLink("RolesAdmin", "Index", "RolesAdmin")</li>
-                        <li>@Html.ActionLink("UsersAdmin", "Index", "UsersAdmin")</li>
+                        <li>@Html.ActionLink("Roles Admin", "Index", "RolesAdmin")</li>
+                        <li>@Html.ActionLink("Users Admin", "Index", "UsersAdmin")</li>
+                        <li>@Html.ActionLink("Repository Amin", "Index", "Admins")</li>
                     }
                     @if (Request.IsAuthenticated && User.IsInRole("Developer"))
                     {
-                    <li>@Html.ActionLink("Dev", "Index", "Developers")</li>
+                    <li>@Html.ActionLink("Repository Developement", "Index", "Developers")</li>
                     }
                     @if (Request.IsAuthenticated && User.IsInRole("NormalUser"))
                     {
-                    <li>@Html.ActionLink("View&Download", "Index", "NormalUsers")</li>
+                    <li>@Html.ActionLink("Repository Display", "Index", "NormalUsers")</li>
                     }
                 </ul>
                 @Html.Partial("_LoginPartial")
@@ -53,8 +54,7 @@
     <footer>
         <p>&copy; @DateTime.Now.Year - File Repository</p>
     </footer>
-   @* @Scripts.Render("~/bundles/jquery")*@
-    
+    @*@Scripts.Render("~/bundles/jquery")*@    
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
    

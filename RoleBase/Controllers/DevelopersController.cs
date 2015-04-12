@@ -67,7 +67,7 @@ namespace RoleBase.Controllers
         }
 
        
-        public string[] GetFiles(string str,char spli)
+        private string[] GetFiles(string str,char spli)
         {
             string[] result;
             result = str.Split(spli);

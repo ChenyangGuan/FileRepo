@@ -1,0 +1,127 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<script src="~/Scripts/jquery.min.js"></script>
+<script src="~/Scripts/jquery.easyui.min.js"></script>
+@*<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.js"></script>*@
+<script src="http://malsup.github.com/jquery.form.js"></script>
+
+<h2>Repository Administration</h2>
+<div id="dlg-admin" class="easyui-dialog" title="Warning" style="width:400px;height:200px;padding:10px"
+     data-options="
+                buttons: '#dlg-buttons',
+                closed: 'true'
+            ">
+
+</div>
+<div id="dlg-buttons">
+    <a href="javascript:void(0)" id="dlg-admin-no" class="easyui-linkbutton" iconcls="icon-no">Cancel</a>
+    <a href="javascript:void(0)" id="dlg-admin-ok" class="easyui-linkbutton" iconcls="icon-ok">Confirm</a>
+
+</div>
+
+<div id="RenameDirwindow" class="easyui-window" title="Rename Directory" data-options="modal:true,closed:true,iconCls:'icon-folder'" style="width:500px;height:200px;padding:10px;">
+    <div style="margin-bottom:2px">
+        New Folder Name:
+        <input class="easyui-textbox" id="FolderN" style="width:50%;height:25px;margin-left:5px">
+    </div>
+    <div>
+        <a href="#" class="easyui-linkbutton" style="margin-left:70%" data-options="iconCls:'icon-ok'" onclick="RenameConfirm()">Confirm</a>
+    </div>
+</div>
+@Html.Partial("_FileBrowserPartial")
+<script>
+    function DeleteFiles() {
+        var rows = $("#filestree").treegrid("getSelections");
+        var Filestring = "";
+        var content = "";
+        if (rows.length == 0) {
+            $('#dlg').dialog('open');
+            $('#dlg').html("Please choose at least one file.");
+            $('#dlg-ok').bind('click', function () { Back(); });
+            return;
+        }
+        else {
+            for (var i = 0; i < rows.length; i++) {
+                Filestring += rows[i].FullPath + "<br/>";
+                content += rows[i].FullPath + ";";
+            }
+            $('#dlg-admin').dialog('open');
+            $('#dlg-admin-no').bind('click', function () { $('#dlg-admin').dialog('close'); });
+            $('#dlg-admin-ok').bind('click', function () { ConfirmDelete(content); });
+            $('#dlg-admin').html("<p style='color:red'>Are you sure to DELETE these files: </p>" + Filestring);
+        }
+    }
+    function ConfirmDelete(content) {
+        $.ajax({
+            url: '@Url.Action("DeleteFiles","Admins")' + "?filename=" + content,
+        })
+        .done(function (data) {
+            if (data == "Success") {
+                $.messager.show({
+                    title: 'Successful',
+                    msg: 'Delete Files complete.',
+                    timeout: 5000,
+                    showType: 'slide'
+                });
+
+                Refreshtree();
+
+            }
+            else {
+
+                $.messager.show({
+                    title: 'Error',
+                    msg: 'Error. Try again.',
+                    timeout: 5000,
+                    showType: 'slide'
+                });
+
+            }
+            $('#dlg-admin').dialog('close');
+        });
+    }
+    function RenameFolder() {
+        var rows = $("#filestree").treegrid("getSelections");
+        if (rows.length == 0) {
+            $('#dlg').dialog('open');
+            $('#dlg').html("Please choose at least one folder.");
+            $('#dlg-ok').bind('click', function () { Back(); });
+            return;
+        }
+        $('#RenameDirwindow').window('open');
+
+
+    }
+
+    function RenameConfirm() {
+        var Folder;
+        var newname = $('#FolderN').textbox('getText');
+        var AllNumIsSame = new Array("’", "”", "。", ";", ":", "<", ">", "?", "|", "!", "#", "$", "%", "^", "&", "*", "(", ")", "+", "-", ".");
+        for (var i = 0; i < AllNumIsSame.length; i++) {
+            if (newname.indexOf(AllNumIsSame[i]) != -1) {
+                $.messager.show({
+                    title: 'Error',
+                    msg: 'Error. Can not Contain '+AllNumIsSame[i],
+                    timeout: 5000,
+                    showType: 'slide'
+                });
+                return;
+            }
+        }
+        var rows = $("#filestree").treegrid("getSelections");
+        if (rows[0].Size != "")
+            Folder = $("#filestree").treegrid('getParent', Folder[0].id);
+        else Folder = rows[0];
+        Folder = Folder.FullPath;
+
+        $.ajax({
+            url: '@Url.Action("RenameFolder","Admins")' + "?path=" + Folder + "&&name=" + newname,
+        })
+       .done(function (data) {
+       });
+
+    }
+</script>
