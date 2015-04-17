@@ -2,7 +2,9 @@
     <table title="Folder Browser" class="easyui-treegrid" style="width:100%;height:500px" id="filestree"></table>
     <div id="tb">
         <a href="#" class="easyui-linkbutton" iconcls="icon-search" plain="true" onclick="ViewFile()">View</a>
-        @if (User.IsInRole("NormalUser")) {         
+        @if (User.IsInRole("NormalUser"))
+        {
+        <a href="#" class="easyui-linkbutton" iconcls="icon-dependency" plain="true" onclick="ShowDependency()">Show Dependencies</a>
         <a href="#" class="easyui-linkbutton" iconcls="icon-download" plain="true" onclick="downloadfiles()">Download</a>
         }
         else if (User.IsInRole("Developer"))
@@ -48,20 +50,38 @@
     
 </div>
 
-
-
+<div id="dependencywindow" class="easyui-window" title="Dependencies Window" data-options="modal:true,closed:true,iconCls:'icon-dependency'" style="width:600px;height:500px;padding:10px;">
+    <div id="tt" class="easyui-tabs" style="width:600px;height:500px;">
+        <div title="Show Dependencies" data-options="iconCls:'icon-dependency'">
+            <table id="denpendencytable" class="easyui-datagrid" title="File Dependency" style="width:600px;height:500px"></table>
+            @if (User.IsInRole("Developer")) { 
+            <div id="denpendencytb">
+                <a href="#" class="easyui-linkbutton" id="adddepend" iconcls="icon-add" plain="true" onclick="AddDependency()">Add Dependencies</a>
+                <a href="#" class="easyui-linkbutton" iconcls="icon-cancel" plain="true" onclick="DeleteDependency()">Delete Dependencies</a>
+            </div>
+            }
+            @if (User.IsInRole("NormalUser"))
+            {
+                <div id="denpendencytb">
+                   
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="http://www.jeasyui.com/easyui/datagrid-groupview.js"></script>
     <script>
 
     function Back() {
         $('#dlg').dialog('close');
 
     }
-    
+
     function Refreshtree() {
         $('#filestree').treegrid('reload');
         $('#filestree').treegrid('unselectAll');
     }
-    
+
 
     $("#filestree").treegrid({
         method: 'get',
@@ -70,11 +90,9 @@
         treeField: 'FileName',
         url: '@Url.Action("Getjson", "NormalUsers")',
         columns: [[
-               // {field:"ck",checkbox:true,width:40},
+
                 {
-                    title: 'FileName', field: 'FileName', formatter: function (val, row, index) {
-                        return "<input id='ck" + row.id + "' TYPE=\"checkbox\"></input>" + row.FileName;
-                    }, width: 200
+                    title: 'FileName', field: 'FileName', width: 200
                 },
                 {
                     title: 'Size', field: 'Size', width: 100, align: 'center',
@@ -85,34 +103,29 @@
         singleSelect: false,
         toolbar: '#tb',
 
-        onClickRow: function (row) {
-            var selectedNode = $(this).treegrid('getSelected');
-            if ($('#ck' + row.id).is(":checked") == true)
-                $('#ck' + row.id).prop("checked", false);
-            else
-                $('#ck' + row.id).prop("checked", true);
-            if (selectedNode) {
-                var childNodes = $("#filestree").treegrid('getChildren', row.id);
-                if (childNodes.length > 0) {
-                    if ($('#ck' + row.id).is(":checked") == true) {
-                        for (i = 0; i < childNodes.length; i++) {
-                            $('#ck' + childNodes[i].id).prop("checked", true);
-                            $("#filestree").treegrid('select', childNodes[i].id);
+        onDblClickRow: function (row) {
+            var children = $("#filestree").treegrid('getChildren', row.id);
+            var selections = $("#filestree").treegrid('getSelections');
+            var flag = true;
+            for (var i = 0; i < selections.length; i++) {
+                for (var j = 0; j < children.length; j++) {
+                    if (selections[i] == children[j]) {
+                        $("#filestree").treegrid('unselect', row.id);
+                        for (var i = 0; i < children.length; i++) {
+                            $("#filestree").treegrid('unselect', children[i].id);
+                        }
+                        flag = false;
+                        break;
+                    }
 
-                        }
-                    }
-                    else {
-                        for (i = 0; i < childNodes.length; i++) {
-                            $('#ck' + childNodes[i].id).prop("checked", false);
-                            $("#filestree").treegrid('unselect', childNodes[i].id);
-                        }
-                    }
                 }
-
-
-
             }
-
+            if (flag) {
+                $("#filestree").treegrid('select', row.id);
+                for (var i = 0; i < children.length; i++) {
+                    $("#filestree").treegrid('select', children[i].id);
+                }
+            }
 
         }
     });
@@ -161,7 +174,7 @@
     function ShowFile(i) {
         var rows = $("#filestree").treegrid("getSelections");
         var size = rows[i].Size;
-        while (size == ""&&size!=null) {            
+        while (size == ""&&size!=null) {
             i++;
             size = rows[i].Size;
         }
@@ -219,11 +232,44 @@
         }
 
         ShowFile(0);
+    }
 
+    function ShowDependency() {
+        var rows = $("#filestree").treegrid("getSelections");
+        if (rows.length == 0) {
+            $('#dlg').dialog('open');
+            $('#dlg').html("Please choose at least one file.");
+            $('#dlg-ok').bind('click', function () { Back(); });
+            return;
+        }
+        else {
+            var files = "";
+            for (var i = 0; i < rows.length; i++) {
+                files += rows[i].FullPath + ";";
+            }
+            
+            $('#denpendencytable').datagrid({
+                url: '@Url.Action("ShowDependency","Developers")' + "?filename=" + files,
+                columns: [[
+                    { field: 'FileName', title: 'FileName', width: 100 },
+                    { field: 'FullPath', title: 'FullPath', width: 300 },
 
+                ]],
+                toolbar: '#denpendencytb',
+                view: groupview,
+                collapsible: true,
+                rownumbers: true,
+                groupField: 'GroupBound',
+                groupFormatter: function (value, rows) {
+                    return value;
+                }
+
+            });
+            
+            $('#dependencywindow').window('open');
+
+        }
     }
 
 
-
-    
     </script>

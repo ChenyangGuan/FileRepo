@@ -112,7 +112,9 @@ namespace RoleBase.Controllers
 
             id = 0;
     }
+
         //GET
+        [AllowAnonymous]
         public ActionResult ShowDependency(string filename)
         {
             string[] fileset = GetFiles(filename,';');

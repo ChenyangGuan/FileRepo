@@ -28,18 +28,8 @@
 </div>
 
     @Html.Partial("_FileBrowserPartial")
-    <script type="text/javascript" src="http://www.jeasyui.com/easyui/datagrid-groupview.js"></script>
-    <div id="dependencywindow" class="easyui-window" title="Dependencies Window" data-options="modal:true,closed:true,iconCls:'icon-dependency'" style="width:600px;height:500px;padding:10px;">
-        <div id="tt" class="easyui-tabs" style="width:600px;height:500px;">
-            <div title="Show Dependencies" data-options="iconCls:'icon-dependency'">
-                <table id="denpendencytable" class="easyui-datagrid" title="File Dependency" style="width:600px;height:500px"></table>
-                <div id="denpendencytb">
-                    <a href="#" class="easyui-linkbutton" id="adddepend" iconcls="icon-add" plain="true" onclick="AddDependency()">Add Dependencies</a>
-                    <a href="#" class="easyui-linkbutton" iconcls="icon-cancel" plain="true" onclick="DeleteDependency()">Delete Dependencies</a>
-                </div>
-            </div>
-        </div>
-    </div>
+   
+    
     <div id="CreateDirwindow" class="easyui-window" title="Create Directory" data-options="modal:true,closed:true,iconCls:'icon-folder'" style="width:500px;height:200px;padding:10px;">
         <div style="margin-bottom:2px">
             Folder Name:
@@ -110,41 +100,7 @@
         })();
 
 
-        function ShowDependency() {
-            var rows = $("#filestree").treegrid("getSelections");
-            if (rows.length == 0) {
-                $('#dlg').dialog('open');
-                $('#dlg').html("Please choose at least one file.");
-                $('#dlg-ok').bind('click', function () { Back(); });
-                return;
-            }
-            else {
-                var files = "";
-                for (var i = 0; i < rows.length; i++) {
-                    files += rows[i].FullPath + ";";
-                }
-                $('#denpendencytable').datagrid({
-                    url: '@Url.Action("ShowDependency","Developers")' + "?filename=" + files,
-                    columns: [[
-                        { field: 'FileName', title: 'FileName', width: 100 },
-                        { field: 'FullPath', title: 'FullPath', width: 300 },
-
-                    ]],
-                    toolbar: '#denpendencytb',
-
-                    view: groupview,
-                    collapsible: true,
-                    rownumbers: true,
-                    groupField: 'GroupBound',
-                    groupFormatter: function (value, rows) {
-                        return value;
-                    }
-
-                });
-                $('#dependencywindow').window('open');
-
-            }
-        }
+       
 
 
         function DeleteDependency() {

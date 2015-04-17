@@ -121,6 +121,24 @@
             url: '@Url.Action("RenameFolder","Admins")' + "?path=" + Folder + "&&name=" + newname,
         })
        .done(function (data) {
+           if (data == "Success") {
+               $.messager.show({
+                   title: 'Successful',
+                   msg: "Rename directory is completed.",
+                   timeout: 5000,
+                   showType: 'slide'
+               });
+               Refreshtree();
+               $('#RenameDirwindow').window('close');
+           }
+           else {
+               $.messager.show({
+                   title: 'Error',
+                   msg: data,
+                   timeout: 5000,
+                   showType: 'slide'
+               });
+           }
        });
 
     }

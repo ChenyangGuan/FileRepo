@@ -82,8 +82,12 @@ namespace FileService.Controllers
                 }
                 else if (open == "upload")
                 {
-                    path = path + "uploads";
-                    string currentFileSpec = path + "\\" + fileName;
+                    path = path + "Uploads";
+                    string currentFileSpec = path + fileName;
+                    string dirname = currentFileSpec.Substring(0, currentFileSpec.LastIndexOf("\\"));                   
+                    DirectoryInfo dir = new DirectoryInfo(dirname);
+                    if(dir.Exists==false) Directory.CreateDirectory(dirname);
+                    
                     fs = new FileStream(currentFileSpec, FileMode.OpenOrCreate);
                     session.saveStream(fs, sessionId);
                 }
@@ -134,7 +138,7 @@ namespace FileService.Controllers
         }
 
         // POST api/file
-        public HttpResponseMessage Post(int blockSize)
+       async public Task<HttpResponseMessage> Post(int blockSize)
         {
             Task<byte[]> task = Request.Content.ReadAsByteArrayAsync();
             byte[] Block = task.Result;

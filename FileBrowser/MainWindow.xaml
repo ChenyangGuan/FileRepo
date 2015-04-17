@@ -1,0 +1,66 @@
+﻿<Window x:Class="FileBrowser.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:FileBrowser" 
+        Title="FileRepositoryWPF" Height="500" Width="650">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0*"/>
+            <ColumnDefinition Width="31*"/>
+            <ColumnDefinition Width="142*"/>
+            <ColumnDefinition Width="0*"/>
+        </Grid.ColumnDefinitions>
+        <TabControl Name="tabs" HorizontalAlignment="Left" Height="460" Margin="0,10,-0.4,0" VerticalAlignment="Top" Width="594" Grid.ColumnSpan="4" FontFamily="Tahoma" FontWeight="Bold" FontSize="12" >
+            <TabItem Header="File Browser" >
+                <Grid Background="White">
+                    <TreeView x:Name="directoryTreeView" Width="122" Height="387" Margin="12,12,0,0" 
+          VerticalAlignment="Top" HorizontalAlignment="Left">
+                        <TreeView.Resources>
+                            <HierarchicalDataTemplate DataType="{x:Type local:DirRecord}"
+                                  ItemsSource="{Binding Directories}" >
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="/Images/folder.png"  Width="16" Height="16"/>
+                                    <TextBlock Text="{Binding Info.Name}"/>
+                                </StackPanel>
+                            </HierarchicalDataTemplate>
+                        </TreeView.Resources>
+                    </TreeView>
+
+                    <DataGrid x:Name="fileInfo" Width="439" Height="387" Margin="139,10,0,0"
+          VerticalAlignment="Top" HorizontalAlignment="Left"
+          GridLinesVisibility="Vertical" VerticalGridLinesBrush="Gray"
+          ItemsSource="{Binding ElementName=directoryTreeView, Path=SelectedItem.Files}"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Upload Folder" >
+                <Grid Background="White">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="38*"/>
+                        <ColumnDefinition Width="11*"/>
+                    </Grid.ColumnDefinitions>
+                    <ListBox Name="filepool" HorizontalAlignment="Left" Height="348" VerticalAlignment="Top" Width="588" Margin="0,85,0,0" Grid.ColumnSpan="2"  />
+                    <Label Name="pathpool" Content="Choose Directory path..." HorizontalAlignment="Left" Margin="10,25,0,0" VerticalAlignment="Top" Height="41" Width="458" Grid.ColumnSpan="2"/>
+                    <Button Content="Select Folder" HorizontalAlignment="Left" Margin="282,25,0,0" VerticalAlignment="Top" Width="85" Height="38" Click="SelectButton_Click"/>
+                    <Label Content="Contain Files: " HorizontalAlignment="Left" Margin="3,64,0,0" VerticalAlignment="Top"/>
+                    <Button Content="Upload" HorizontalAlignment="Left" Margin="31,25,0,0" VerticalAlignment="Top" Width="80" Height="38" Click="Upload_Async_Click" Grid.Column="1"/>
+                    <TextBlock Name="hiddenpath" HorizontalAlignment="Left" Margin="237,9,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Visibility="Collapsed"/>
+                    <Button Content="Rename Folder" HorizontalAlignment="Left" Margin="378,25,0,0" VerticalAlignment="Top" Width="104" Height="38" Grid.ColumnSpan="2" Click="Rename_Click"/>
+                    <Label Name="Renameinfo" Content="                       Use default folder name, same as upload folder." HorizontalAlignment="Left" Margin="199,61,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="379" Height="24" Foreground="red"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Rename Folder" Name="RenameTab" Margin="-2,-2,-2,0.8" >
+                <Grid Background="White" Margin="0,0,0,0.4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="38*"/>
+                        <ColumnDefinition Width="11*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock x:Name="hiddenpath1" HorizontalAlignment="Left" Margin="237,9,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Visibility="Collapsed"/>
+                    <Label Content="New Folder Name:" HorizontalAlignment="Left" Margin="23,46,0,0" VerticalAlignment="Top"/>
+                    <TextBox HorizontalAlignment="Left" Name="NewName" Height="21" Margin="150,50,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="218"/>
+                    <Button Grid.ColumnSpan="2" Content="Confirm" HorizontalAlignment="Left" Margin="402,50,0,0" VerticalAlignment="Top" Width="78" Height="21" Click="Confirm_Click"/>
+                    <Label Name="Info" Content="" HorizontalAlignment="Left" Margin="23,93,0,0" VerticalAlignment="Top" FontFamily="Yu Mincho Demibold" Foreground="Red"/>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>

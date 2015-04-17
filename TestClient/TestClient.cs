@@ -18,9 +18,9 @@ using System.Net.Http;  // need to add reference to System.Net.Http
 using Newtonsoft.Json;  // need to add reference to System.Json
 using System.Threading;
 
-namespace TestClient
+namespace Client
 {
-  class TestClient
+  public class TestClient
   {
     private HttpClient client = new HttpClient();
     private HttpRequestMessage message;
@@ -30,7 +30,7 @@ namespace TestClient
 
     //----< set destination url >------------------------------------------
 
-    TestClient(string url) { urlBase = url; }
+    public TestClient(string url) { urlBase = url; }
 
     //----< get list of files available for download >---------------------
 
@@ -125,7 +125,7 @@ namespace TestClient
       FileStream up;
       try
       {
-        up = new FileStream(path + fileName, FileMode.Open);
+        up = new FileStream(path + "\\"+fileName, FileMode.Open);
       }
       catch
       {
@@ -192,10 +192,8 @@ namespace TestClient
       down.Close();
     }
 
-    async Task uploadFileAsync(string filename, string path)
-    {
-        await Task.Run(() => upLoadFile(filename,path));
-    }
+    
+     
     //----< upLoad File >--------------------------------------------------
     /*
      *  Open server file for writing
@@ -205,22 +203,28 @@ namespace TestClient
      *  Close server file
      *  Close client file
      */
-    void upLoadFile(string filename,string path)
+     public void upLoadFile(string filename,string path)
     {
       Console.Write("\n  Attempting to upload file {0}", filename);
       Console.Write("\n --------------------------------------\n");
 
       Console.Write("\n  Sending get request to open file");
       Console.Write("\n ----------------------------------");
-
-      openServerUpLoadFile(filename);
+      string filenameOnserver;
+      if (filename.IndexOf("\\") == -1)
+          filenameOnserver = path.Substring(path.LastIndexOf("\\")) + "\\" + filename;
+      else
+      {
+          filenameOnserver = "\\"+filename;
+      }
+      openServerUpLoadFile(filenameOnserver);
       Console.Write("\n  Response status = {0}\n", status);
       FileStream up = openClientUpLoadFile(filename,path);
 
       Console.Write("\n  Sending Post requests to send blocks:");
       Console.Write("\n ---------------------------------------");
 
-      const int upBlockSize = 512;
+      const int upBlockSize = 204800;
       byte[] upBlock = new byte[upBlockSize];
       int bytesRead = upBlockSize;
       while (bytesRead == upBlockSize)
@@ -337,6 +341,9 @@ namespace TestClient
          }
          return dirset;
      }
+
+     
+
     static void download(TestClient tc)
     {
 
@@ -379,11 +386,10 @@ namespace TestClient
         Console.Write("\n Successful !!!!  ");
         Console.ReadLine();
     }
-
+    
     static void Main(string[] args)
     {
       
- 
       TestClient tc = new TestClient("http://localhost:55664/FileService/api/File");    
         Console.Write("\n  Waiting for server to initialize\n");
         Thread.Sleep(100);
@@ -414,10 +420,7 @@ namespace TestClient
 
                 }
                 Console.Clear();
-            }
-        
-
-     
+            }     
     }
   }
 }
