@@ -64,11 +64,16 @@ namespace Client
     FileStream openClientDownLoadFile(string fileName)
     {
       string path = "../../DownLoad/";
-
+      string abpath = Path.GetFullPath(path);
+      string filedir = fileName.Substring(fileName.IndexOf("Uploads") + 8,fileName.LastIndexOf("\\")-fileName.IndexOf("Uploads")-8);
+      abpath += filedir+"\\";
+      DirectoryInfo dir = new DirectoryInfo(abpath);
+      if (!dir.Exists) Directory.CreateDirectory(abpath);
+      string partname = fileName.Substring(fileName.LastIndexOf("\\") + 1);
       FileStream down;
       try
       {
-        down = new FileStream(path + fileName, FileMode.OpenOrCreate);
+          down = new FileStream(abpath + partname, FileMode.OpenOrCreate);
       }
       catch
       {
@@ -155,7 +160,7 @@ namespace Client
      *  Close server file
      *  Close client file
      */
-    void downLoadFile(string filename)
+    public void downLoadFile(string filename)
     {
       Console.Write("\n  Attempting to download file {0} ", filename);
       Console.Write("\n ------------------------------------------\n");
@@ -173,7 +178,7 @@ namespace Client
       Console.Write("\n ------------------------------------------");
       while (true)
       {
-        int blockSize = 512;
+        int blockSize = 204800;
         byte[] Block = getFileBlock(down, blockSize);
         Console.Write("\n  Response status = {0}", status);
         Console.Write("\n  received block of size {0} bytes\n", Block.Length);

@@ -75,8 +75,7 @@ namespace FileService.Controllers
                 string path = System.Web.HttpContext.Current.Server.MapPath("../../");
                 if (open == "download")  // attempt to open requested fileName
                 {
-                    path = path + "uploads";
-                    string currentFileSpec = path + "\\" + fileName;
+                    string currentFileSpec = fileName;
                     fs = new FileStream(currentFileSpec, FileMode.Open);
                     session.saveStream(fs, sessionId);
                 }

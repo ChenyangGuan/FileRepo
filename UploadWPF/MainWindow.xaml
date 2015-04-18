@@ -1,8 +1,8 @@
-﻿<Window x:Class="FileBrowser.MainWindow"
+﻿<Window x:Class="UploadWPF.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:local="clr-namespace:FileBrowser" 
-        Title="FileRepositoryWPF" Height="500" Width="650">
+        xmlns:local="clr-namespace:UploadWPF" 
+        Title="FileRepository UploadWPF" Height="500" Width="650">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0*"/>
@@ -19,7 +19,7 @@
                             <HierarchicalDataTemplate DataType="{x:Type local:DirRecord}"
                                   ItemsSource="{Binding Directories}" >
                                 <StackPanel Orientation="Horizontal">
-                                    <Image Source="/Images/folder.png"  Width="16" Height="16"/>
+                                    <Image Source="E:\Academic\IP\My projects\FileRepo\FileRepo\RoleBase\Scripts\themes\icons\folder.png"  Width="16" Height="16"/>
                                     <TextBlock Text="{Binding Info.Name}"/>
                                 </StackPanel>
                             </HierarchicalDataTemplate>

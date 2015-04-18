@@ -1,7 +1,60 @@
 ﻿@{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "NormalIndex";
 }
 <script src="~/Scripts/jquery.min.js"></script>
 <script src="~/Scripts/jquery.easyui.min.js"></script>
 <h2>Repository Display</h2>
+<div id="download-dlg" class="easyui-dialog" title="Info" style="width:500px;height:150px;padding:10px"
+     data-options="
+                buttons: '#download-dlg-buttons',
+                closed: 'true'
+            ">
+
+</div>
+<div id="download-dlg-buttons">
+    <a href="javascript:void(0)" id="dlg-withoutdepen" class="easyui-linkbutton" onclick="downloadfiles(0)">Just Download selected files</a>
+    <a href="javascript:void(0)" id="dlg-withdepen" class="easyui-linkbutton" onclick="downloadfiles(1)">Download With Dependencies</a>
+</div>
+<script>
+
+    function downloadfiles(depen) {
+        $.ajax({
+            url:'@Url.Action("clearTrash", "NormalUsers")'
+        });
+        var rows = $("#filestree").treegrid("getSelections");
+        if (rows.length > 0) {
+            var files = [];
+            var temprows = [];
+            [].push.apply(temprows, rows);
+            for (var i = 0; i < temprows.length; i++) {
+                if (temprows[i] == null) continue;
+                if (temprows[i].Size == "") {
+                    temprows[i].FullPath = "[folder]" + temprows[i].FullPath;
+
+                    var children = $("#filestree").treegrid('getChildren', temprows[i].id);
+                    for (var j = 0; j < temprows.length; j++) {
+                        for (var x = 0; x < children.length; x++) {
+                            if (children[x] != null && temprows[j] != null)
+                                if (children[x].id == temprows[j].id) {
+                                    temprows[j] = null;
+                                    break;
+                                }
+                        }
+                    }
+                }
+                files.push(temprows[i].FullPath);
+            }
+            var url;
+            if (depen == 0)
+                url = '@Url.Action("Download", "NormalUsers")' + "?fullpath=" + files;
+            else
+                url = '@Url.Action("Download", "NormalUsers")' + "?fullpath=[depen]" + files;
+            window.open(url);
+            $('#download-dlg').dialog('close');
+
+        }
+    }
+
+
+    </script>
 @Html.Partial("_FileBrowserPartial")

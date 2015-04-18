@@ -1,0 +1,41 @@
+﻿<Window x:Class="DownloadWPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:DownloadWPF" 
+        Title="FileRepository DownloadWPF" Height="500" Width="650">
+    <Grid>
+        <TabControl Name="tabs" HorizontalAlignment="Left" Height="460" Margin="0,10,-0.4,0" VerticalAlignment="Top" Width="594" Grid.ColumnSpan="4" FontFamily="Tahoma" FontWeight="Bold" FontSize="12" >
+            <TabItem Header="File Browser" >
+                <Grid Background="White">
+                    <TreeView x:Name="directoryTreeView" Width="122" Height="387" Margin="12,12,0,0" 
+          VerticalAlignment="Top" HorizontalAlignment="Left">
+                        <TreeView.Resources>
+                            <HierarchicalDataTemplate DataType="{x:Type local:DirRecord}"
+                                  ItemsSource="{Binding Directories}" >
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="E:\Academic\IP\My projects\FileRepo\FileRepo\RoleBase\Scripts\themes\icons\folder.png"  Width="16" Height="16"/>
+                                    <TextBlock Text="{Binding Info.Name}"/>
+                                </StackPanel>
+                            </HierarchicalDataTemplate>
+                        </TreeView.Resources>
+                    </TreeView>
+
+                    <DataGrid x:Name="fileInfo" Width="439" Height="387" Margin="139,10,0,0"
+          VerticalAlignment="Top" HorizontalAlignment="Left"
+          GridLinesVisibility="Vertical" VerticalGridLinesBrush="Gray"
+          ItemsSource="{Binding ElementName=directoryTreeView, Path=SelectedItem.Files}" MouseRightButtonDown="ShowMenu">
+                        <DataGrid.Resources>
+                            <ContextMenu x:Key="downloadMenu">
+                                <MenuItem Header="Download..." Click="Download"/>
+                                <MenuItem Header="Download with Dependencies" Click="DownloadWithDepen"/>
+                                
+                            </ContextMenu>
+                        </DataGrid.Resources>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+            
+            
+        </TabControl>
+    </Grid>
+</Window>

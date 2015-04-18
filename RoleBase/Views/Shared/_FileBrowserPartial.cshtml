@@ -5,7 +5,7 @@
         @if (User.IsInRole("NormalUser"))
         {
         <a href="#" class="easyui-linkbutton" iconcls="icon-dependency" plain="true" onclick="ShowDependency()">Show Dependencies</a>
-        <a href="#" class="easyui-linkbutton" iconcls="icon-download" plain="true" onclick="downloadfiles()">Download</a>
+        <a href="#" class="easyui-linkbutton" iconcls="icon-download" plain="true" onclick="DownloadInfo()">Download</a>
         }
         else if (User.IsInRole("Developer"))
         {
@@ -71,7 +71,10 @@
 </div>
 <script type="text/javascript" src="http://www.jeasyui.com/easyui/datagrid-groupview.js"></script>
     <script>
-
+        function DownloadInfo() {
+            $('#download-dlg').dialog('open');
+            $('#download-dlg').html('Would you want to download files with dependencies?');
+        }
     function Back() {
         $('#dlg').dialog('close');
 
@@ -99,6 +102,7 @@
 
                 },
                 { title: 'FullPath', field: 'FullPath', width: 320 },
+                { title: 'LastAccessTime', field: 'LastAccessTime', width: 320 },
         ]],
         singleSelect: false,
         toolbar: '#tb',
@@ -129,40 +133,7 @@
 
         }
     });
-    function downloadfiles() {
-        var rows = $("#filestree").treegrid("getSelections");
-        if (rows.length > 0) {
-            var files = [];
-            var temprows = [];
-            [].push.apply(temprows, rows);
-            for (var i = 0; i < temprows.length; i++) {
-                if (temprows[i] == null) continue;
-                if (temprows[i].Size == "") {
-                    temprows[i].FullPath = "[folder]" + temprows[i].FullPath;
-
-                    var children = $("#filestree").treegrid('getChildren', temprows[i].id);
-                    for (var j = 0; j < temprows.length; j++) {
-                        for (var x = 0; x < children.length; x++) {
-                            if (children[x] != null && temprows[j] != null)
-                                if (children[x].id == temprows[j].id) {
-                                    temprows[j] = null;
-                                    break;
-                                }
-                        }
-                    }
-                }
-                files.push(temprows[i].FullPath);
-            }
-
-            var url = '@Url.Action("Download", "NormalUsers")' + "?fullpath=" + files;
-            window.location.href = url;
-        }
-        else {
-
-        }
-
-
-    }
+    
 
     function NextFile(i) {
         var rows = $("#filestree").treegrid("getSelections");

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace FileBrowser.Properties
+namespace DownloadWPF.Properties
 {
 
 

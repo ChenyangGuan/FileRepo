@@ -74,6 +74,7 @@ namespace RoleBase.Controllers
             result=result.Take(result.Count() - 1).ToArray();
             return result;
         }
+       
         public void SearchDepen(string filename,XDocument doc,ref List<Files>dataset){
             string fp = filename;
             bool ExistFile = false;
@@ -90,7 +91,7 @@ namespace RoleBase.Controllers
                     ExistFile = true;
                     if (f.Element("Dependencies").Value == "")
                     {
-                        Files newfile = new Files(++id, "0KB", "NULL", "NULL", null, "", filename, fp);
+                        Files newfile = new Files(++id, "0KB", "NULL", "NULL","NULL", null, "", filename, fp);
                         dataset.Add(newfile);
                         continue;
                     }
@@ -99,14 +100,14 @@ namespace RoleBase.Controllers
                     {                        
                         string fileP = defile.Value;
                         FileInfo file = new FileInfo(Server.MapPath(fileP));
-                        Files newfile = new Files(++id, (file.Length / 1024).ToString() + "KB", file.Name,fileP,null,"",filename,fp);
+                        Files newfile = new Files(++id, (file.Length / 1024).ToString() + "KB", file.Name,fileP,file.LastAccessTime.ToString(),null,"",filename,fp);
                         dataset.Add(newfile);
                     }
                 }
             }
             if (!ExistFile)
             {
-                Files newfile = new Files(++id,"0KB", "NULL", "NULL", null, "", filename, fp);
+                Files newfile = new Files(++id,"0KB", "NULL", "NULL", "NULL",null, "", filename, fp);
                 dataset.Add(newfile);
             }
 
@@ -150,7 +151,7 @@ namespace RoleBase.Controllers
             foreach (string fileP in fileset)
             {
                 FileInfo file = new FileInfo(Server.MapPath(fileP));
-                Files newfile = new Files(++id, (file.Length / 1024).ToString() + "KB", file.Name, fileP, null, "");
+                Files newfile = new Files(++id, (file.Length / 1024).ToString() + "KB", file.Name, fileP,file.LastAccessTime.ToString(), null, "");
                 dataset.Add(newfile);
             }
             id = 0;
