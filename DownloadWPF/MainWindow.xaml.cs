@@ -57,13 +57,14 @@ namespace DownloadWPF
         {
             List<string> requiredProperties = new List<string>
             {
-                "Name", "Length", "FullName",  "LastWriteTime"
+                "Name", "Length",  "Extension","LastWriteTime"
             };
 
             if (!requiredProperties.Contains(e.PropertyName))
             {
                 e.Cancel = true;
             }
+            
             else
             {
                 e.Column.Header = e.Column.Header.ToString();
@@ -78,13 +79,30 @@ namespace DownloadWPF
 
         private void DownloadWithDepen(object sender, RoutedEventArgs e)
         {
+            Task task = downloadDepen(Filename);
+        }
 
+        async private Task downloadDepen(string filename)
+        {
+            List<string> fileset = tc.GetDependencies(filename);
+            fileset.Add(filename);
+            foreach (string f in fileset)
+            {
+                if(f.LastIndexOf("\\")!=f.Length-1)
+                await Task.Run(() => tc.downLoadFile(f));
+                else
+                await Task.Run(() => tc.downLoadFolder(f));
+            }
+            string messageBoxText = "Download Completed!";
+            string caption = "Download Result";
+            MessageBoxButton button = MessageBoxButton.OK;
+            MessageBoxImage icon = MessageBoxImage.Information;
+            System.Windows.MessageBox.Show(messageBoxText, caption, button, icon);
         }
         async private Task downloadFiles(string filename)
         {
 
-            await Task.Run(() => tc.downLoadFile(filename));
-            
+            await Task.Run(() => tc.downLoadFile(filename));            
             string messageBoxText = "Download Completed!";
             string caption = "Download Result";
             MessageBoxButton button = MessageBoxButton.OK;
@@ -92,7 +110,39 @@ namespace DownloadWPF
             System.Windows.MessageBox.Show(messageBoxText, caption, button, icon);
             
         }
-       
+
+       private void DeleteFolder(){
+           string clientPath = foldername.Substring(foldername.IndexOf("Uploads") + 7);
+           string DownloadPath = System.IO.Path.GetFullPath("../../DownLoad");
+           DirectoryInfo download = new DirectoryInfo(DownloadPath);
+           if (!download.Exists) Directory.CreateDirectory(DownloadPath);
+           clientPath = DownloadPath+clientPath;
+           DirectoryInfo downfolder=new DirectoryInfo(clientPath);
+           if(downfolder.Exists)
+           Directory.Delete(clientPath, true);
+        }
+
+        async private Task SyncFolder()
+        {
+            DeleteFolder();
+            
+            DirectoryInfo dir=new DirectoryInfo(foldername);
+            await Task.Run(() => tc.downLoadFolder(foldername));
+            foreach (DirectoryInfo d in dir.GetDirectories("*", SearchOption.AllDirectories))
+            {
+                await Task.Run(() => tc.downLoadFolder(d.FullName));
+            }
+            
+            string messageBoxText = "Download Completed!";
+            string caption = "Download Result";
+            MessageBoxButton button = MessageBoxButton.OK;
+            MessageBoxImage icon = MessageBoxImage.Information;
+            System.Windows.MessageBox.Show(messageBoxText, caption, button, icon);
+        }
+        private void SyncDir(object sender, RoutedEventArgs e)
+        {
+            Task task = SyncFolder();
+        }
 
         private void ShowMenu(object sender, RoutedEventArgs e)
         {
@@ -104,7 +154,19 @@ namespace DownloadWPF
             System.Windows.Controls.ContextMenu menu = fileInfo.FindResource("downloadMenu") as System.Windows.Controls.ContextMenu;
             menu.PlacementTarget = sender as System.Windows.Controls.Button;
             menu.IsOpen = true;
-             }
+        }
+
+        private void ShowSyncMenu(object sender, RoutedEventArgs e)
+        {
+            object temp;
+            temp = directoryTreeView.SelectedItem;
+            if (temp == null) return;
+            var tmp = temp as DirRecord;
+            foldername = tmp.Info.FullName;
+            System.Windows.Controls.ContextMenu menu = directoryTreeView.FindResource("SyncMenu") as System.Windows.Controls.ContextMenu;
+            menu.PlacementTarget = sender as System.Windows.Controls.Button;
+            menu.IsOpen = true;
+        }
             
         
     }

@@ -65,7 +65,11 @@ namespace Client
     {
       string path = "../../DownLoad/";
       string abpath = Path.GetFullPath(path);
-      string filedir = fileName.Substring(fileName.IndexOf("Uploads") + 8,fileName.LastIndexOf("\\")-fileName.IndexOf("Uploads")-8);
+      string filedir="";
+        if(fileName.IndexOf("Uploads")!=-1)
+      filedir= fileName.Substring(fileName.IndexOf("Uploads") + 8,fileName.LastIndexOf("\\")-fileName.IndexOf("Uploads")-8);
+        else if(fileName.IndexOf("App_Data")!=-1)
+      filedir = fileName.Substring(fileName.IndexOf("App_Data") + 9, fileName.LastIndexOf("\\") - fileName.IndexOf("App_Data") - 9);
       abpath += filedir+"\\";
       DirectoryInfo dir = new DirectoryInfo(abpath);
       if (!dir.Exists) Directory.CreateDirectory(abpath);
@@ -151,6 +155,17 @@ namespace Client
       HttpResponseMessage response = task.Result;
       status = response.ReasonPhrase;
     }
+    //----< downLoad Folder>-----------------------------------------------
+    async public Task downLoadFolder(string foldername)
+    {
+        DirectoryInfo dir = new DirectoryInfo(foldername);
+        foreach (FileInfo f in dir.GetFiles())
+        {
+            await Task.Run(() => this.downLoadFile(f.FullName));
+        }
+            
+    }
+
     //----< downLoad File >------------------------------------------------
     /*
      *  Open server file for reading
@@ -164,7 +179,6 @@ namespace Client
     {
       Console.Write("\n  Attempting to download file {0} ", filename);
       Console.Write("\n ------------------------------------------\n");
-
       FileStream down;
       Console.Write("\n  Sending Get request to open file");
       Console.Write("\n ----------------------------------");
@@ -197,7 +211,24 @@ namespace Client
       down.Close();
     }
 
+    //----< Get Dependencies File >---------------------------------------
+public List<string> GetDependencies(string filename){  
+        List<string> fileset=new List<string>();
+        message = new HttpRequestMessage();
+        message.Method = HttpMethod.Get;
+        message.RequestUri = new Uri(urlBase+"?Fullpath="+filename);
+        Task<HttpResponseMessage> task = client.SendAsync(message);
+        HttpResponseMessage response1 = task.Result;
+        response = task.Result;
+        status = response.ReasonPhrase;
+        fileset = Newtonsoft.Json.JsonConvert.DeserializeObject<List<string>>(response1.Content.ReadAsStringAsync().Result);        
+        foreach (string f in fileset)
+        {
+            Console.Write("\n <file> {0}",  f);
+        }
+        return fileset;
     
+}
      
     //----< upLoad File >--------------------------------------------------
     /*
@@ -396,36 +427,36 @@ namespace Client
     {
       
       TestClient tc = new TestClient("http://localhost:55664/FileService/api/File");    
-        Console.Write("\n  Waiting for server to initialize\n");
-        Thread.Sleep(100);
-        int num = 0;
-            while (true)
-            {
-                Console.Write("\n  Demonstrating WebApi File Service and Test Client");
-                Console.Write("\n ===================================================\n");
-                Console.Write("\n *****1. Upload File*****\n");
-                Console.Write("\n *****2. Download File*****\n");            
-                Console.Write("\n *****3. Exit*****\n");
-                Console.Write("\n What you want:  ");
-                try
-                {
-                    num = int.Parse(Console.ReadLine());
-                }
-                catch (System.FormatException)
-                {
-                    Console.Clear();
-                    continue;
-                }
-                switch (num)
-                {
-                    case 1: upload(tc);break;
-                    case 2: download(tc); break;                    
-                    case 3: Environment.Exit(0); break;
-                    default: Console.Clear(); continue;
+  //      Console.Write("\n  Waiting for server to initialize\n");
+  //      Thread.Sleep(100);
+  //      int num = 0;
+  //          while (true)
+  //          {
+  //              Console.Write("\n  Demonstrating WebApi File Service and Test Client");
+  //              Console.Write("\n ===================================================\n");
+  //              Console.Write("\n *****1. Upload File*****\n");
+  //              Console.Write("\n *****2. Download File*****\n");            
+  //              Console.Write("\n *****3. Exit*****\n");
+  //              Console.Write("\n What you want:  ");
+  //              try
+  //              {
+  //                  num = int.Parse(Console.ReadLine());
+  //              }
+  //              catch (System.FormatException)
+  //              {
+  //                  Console.Clear();
+  //                  continue;
+  //              }
+  //              switch (num)
+  //              {
+  //                  case 1: upload(tc);break;
+  //                  case 2: download(tc); break;                    
+  //                  case 3: Environment.Exit(0); break;
+  //                  default: Console.Clear(); continue;
 
-                }
-                Console.Clear();
-            }     
+  //              }
+  //              Console.Clear();
+  //          }     
     }
   }
 }

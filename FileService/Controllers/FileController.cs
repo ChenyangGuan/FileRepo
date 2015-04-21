@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Xml.Linq;
 
 namespace FileService.Controllers
 {
@@ -45,6 +46,58 @@ namespace FileService.Controllers
                }
             
             
+        }
+
+        //----< attempt to Get File Dependencies >-------------------------
+        public IEnumerable<string> Get(string Fullpath)
+        {
+            string path = System.Web.HttpContext.Current.Server.MapPath("../../App_Data/FileDependency.xml");
+            List<string> fileset=new List<string>();
+            XDocument doc;
+            try
+            {
+                doc = XDocument.Load(path);
+            }
+            catch (System.IO.FileNotFoundException)
+            {
+                return fileset;
+            }
+            string fp = Fullpath;
+            string filename = Fullpath.Substring(Fullpath.LastIndexOf("\\") + 1);
+            var tmp = doc.Element("FileDependency");
+            IEnumerable<XElement> fn =
+    from el in tmp.Elements() select el;
+            foreach (var f in fn)
+            {
+                string fullpath = f.Element("FullPath").Value.Remove(0, 2);               
+                fullpath=System.Web.HttpContext.Current.Server.MapPath("../../" +fullpath);
+                if ( fullpath== fp)
+                {
+
+                    if (f.Element("Dependencies").Value == "")
+                    {
+                        continue;
+                    }
+                    var denpendentFiles = f.Element("Dependencies").Elements("FileFullPath");
+                    string folderpath = System.Web.HttpContext.Current.Server.MapPath("../../App_Data/");
+                    string FileRelativePath =fp.Substring(fp.IndexOf("Uploads") + 8, fp.LastIndexOf("\\") - fp.IndexOf("Uploads") - 8);
+                    folderpath += FileRelativePath +"\\"+Path.GetFileName(fp)+ "_dependencies";
+                    Directory.CreateDirectory(folderpath);
+                    DirectoryInfo depenency = new DirectoryInfo(folderpath);
+                    foreach (var defile in denpendentFiles)
+                    {
+                        string oldpath = defile.Value.Remove(0, 2);
+                        oldpath = "../../" + oldpath;
+                        string dirpath = depenency.FullName;
+                        string newpath = dirpath + "\\" + defile.Value.Substring(defile.Value.LastIndexOf("\\") + 1);
+                        System.IO.File.Copy(System.Web.HttpContext.Current.Server.MapPath(oldpath), newpath, true);
+
+                    }
+                    fileset.Add(depenency.FullName+"\\");
+                }
+            }
+            return fileset;
+
         }
 
         //----< GET api/File?fileName=foobar.txt&open=true >---------------
