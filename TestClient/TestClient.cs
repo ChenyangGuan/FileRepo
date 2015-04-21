@@ -34,18 +34,18 @@ namespace Client
 
     //----< get list of files available for download >---------------------
 
-    string[] getAvailableFiles()
-    {
-      message = new HttpRequestMessage();
-      message.Method = HttpMethod.Get;
-      message.RequestUri = new Uri(urlBase);
-      Task<HttpResponseMessage> task = client.SendAsync(message);
-      HttpResponseMessage response1 = task.Result;
-      response = task.Result;
-      status = response.ReasonPhrase;
-      string[] files = Newtonsoft.Json.JsonConvert.DeserializeObject<string[]>(response1.Content.ReadAsStringAsync().Result);
-      return files;
-    }
+    //string[] getAvailableFiles()
+    //{
+    //  message = new HttpRequestMessage();
+    //  message.Method = HttpMethod.Get;
+    //  message.RequestUri = new Uri(urlBase);
+    //  Task<HttpResponseMessage> task = client.SendAsync(message);
+    //  HttpResponseMessage response1 = task.Result;
+    //  response = task.Result;
+    //  status = response.ReasonPhrase;
+    //  string[] files = Newtonsoft.Json.JsonConvert.DeserializeObject<string[]>(response1.Content.ReadAsStringAsync().Result);
+    //  return files;
+    //}
     //----< open file on server for reading >------------------------------
 
     int openServerDownLoadFile(string fileName)
@@ -129,8 +129,7 @@ namespace Client
 
     FileStream openClientUpLoadFile(string fileName,string path)
     {
-     // string path = "../../uploads/";
-
+    
       FileStream up;
       try
       {
@@ -155,6 +154,7 @@ namespace Client
       HttpResponseMessage response = task.Result;
       status = response.ReasonPhrase;
     }
+
     //----< downLoad Folder>-----------------------------------------------
     async public Task downLoadFolder(string foldername)
     {
@@ -286,142 +286,142 @@ public List<string> GetDependencies(string filename){
       up.Close();
     }
 
-    static List<string> GetUploadFiles(string path)
-    {
-        DirectoryInfo dir;
-        if(path=="")
-         dir = new DirectoryInfo(@"../../uploads");
-        else  dir = new DirectoryInfo(@path);
-        int index = 1;
-        List<string> fileset = new List<string>();
-        foreach (FileInfo f in dir.GetFiles())
-        {
-            string fullname = f.FullName;
-            string fn = fullname.Substring(fullname.LastIndexOf("\\") + 1);
-            fileset.Add(fn);
-            Console.Write("\n {0}. {1}", index, fn);
-            index++;
-        }
-        return fileset;
-    }
+    //static List<string> GetUploadFiles(string path)
+    //{
+    //    DirectoryInfo dir;
+    //    if(path=="")
+    //     dir = new DirectoryInfo(@"../../uploads");
+    //    else  dir = new DirectoryInfo(@path);
+    //    int index = 1;
+    //    List<string> fileset = new List<string>();
+    //    foreach (FileInfo f in dir.GetFiles())
+    //    {
+    //        string fullname = f.FullName;
+    //        string fn = fullname.Substring(fullname.LastIndexOf("\\") + 1);
+    //        fileset.Add(fn);
+    //        Console.Write("\n {0}. {1}", index, fn);
+    //        index++;
+    //    }
+    //    return fileset;
+    //}
     
-    static void upload(TestClient tc)
-    {
+    //static void upload(TestClient tc)
+    //{
 
-        Console.Write("\n  Choose available file to upload:");
-        Console.Write("\n ------------------------------------------");
-        string path = "";
-        Console.Write("\n Enter the file path: ");
-        path=Console.ReadLine();
-        List<string> fileset = GetUploadFiles(path);
-        int choice = 0;
-        while (true)
-        {
-            Console.Write("\n Please choose a file to upload:  ");
-            try
-            {
-                 choice = int.Parse(Console.ReadLine());
-            }
-            catch (System.FormatException)
-            {
-                Console.Write("\n Error enter, try again.  ");
-                continue;
-            }
-            if (choice > fileset.Count)
-            {
-                Console.Write("\n Error enter, try again.  ");
-                continue;
-            }
-            else break;
-        }
+    //    Console.Write("\n  Choose available file to upload:");
+    //    Console.Write("\n ------------------------------------------");
+    //    string path = "";
+    //    Console.Write("\n Enter the file path: ");
+    //    path=Console.ReadLine();
+    //    List<string> fileset = GetUploadFiles(path);
+    //    int choice = 0;
+    //    while (true)
+    //    {
+    //        Console.Write("\n Please choose a file to upload:  ");
+    //        try
+    //        {
+    //             choice = int.Parse(Console.ReadLine());
+    //        }
+    //        catch (System.FormatException)
+    //        {
+    //            Console.Write("\n Error enter, try again.  ");
+    //            continue;
+    //        }
+    //        if (choice > fileset.Count)
+    //        {
+    //            Console.Write("\n Error enter, try again.  ");
+    //            continue;
+    //        }
+    //        else break;
+    //    }
         
-        string uploadFile = fileset[choice - 1];
-        tc.upLoadFile(uploadFile,path);
-        Console.Write("\n Successful !!!!  ");
-        Console.ReadLine();
-    }
-     public string[] GetdownloadFiles(string path,int index)
-    {
-        string[] fileset;
-        message = new HttpRequestMessage();
-        message.Method = HttpMethod.Get;
-        message.RequestUri = new Uri(urlBase+"?fullpath="+path+"&&ford=true");
-        Task<HttpResponseMessage> task = client.SendAsync(message);
-        HttpResponseMessage response1 = task.Result;
-        response = task.Result;
-        status = response.ReasonPhrase;
-        fileset = Newtonsoft.Json.JsonConvert.DeserializeObject<string[]>(response1.Content.ReadAsStringAsync().Result);        
-        foreach (string f in fileset)
-        {
-            Console.Write("\n <file> {0}. {1}", index, f);
-        }
-        return fileset;
-    }
+    //    string uploadFile = fileset[choice - 1];
+    //    tc.upLoadFile(uploadFile,path);
+    //    Console.Write("\n Successful !!!!  ");
+    //    Console.ReadLine();
+    //}
+    // public string[] GetdownloadFiles(string path,int index)
+    //{
+    //    string[] fileset;
+    //    message = new HttpRequestMessage();
+    //    message.Method = HttpMethod.Get;
+    //    message.RequestUri = new Uri(urlBase+"?fullpath="+path+"&&ford=true");
+    //    Task<HttpResponseMessage> task = client.SendAsync(message);
+    //    HttpResponseMessage response1 = task.Result;
+    //    response = task.Result;
+    //    status = response.ReasonPhrase;
+    //    fileset = Newtonsoft.Json.JsonConvert.DeserializeObject<string[]>(response1.Content.ReadAsStringAsync().Result);        
+    //    foreach (string f in fileset)
+    //    {
+    //        Console.Write("\n <file> {0}. {1}", index, f);
+    //    }
+    //    return fileset;
+    //}
 
 
-     public string[] GetdownloadDir(string path)
-     {
-         string[] dirset;
-         message = new HttpRequestMessage();
-         message.Method = HttpMethod.Get;
-         message.RequestUri = new Uri(urlBase+"?fullpath="+path+"&&ford=false");
-         Task<HttpResponseMessage> task = client.SendAsync(message);
-         HttpResponseMessage response1 = task.Result;
-         response = task.Result;
-         status = response.ReasonPhrase;
-         int index = 1;
-         dirset = Newtonsoft.Json.JsonConvert.DeserializeObject<string[]>(response1.Content.ReadAsStringAsync().Result);
-         foreach (string f in dirset)
-         {
-             Console.Write("\n <dir> {0}. {1}", index++, f);
-         }
-         return dirset;
-     }
+     //public string[] GetdownloadDir(string path)
+     //{
+     //    string[] dirset;
+     //    message = new HttpRequestMessage();
+     //    message.Method = HttpMethod.Get;
+     //    message.RequestUri = new Uri(urlBase+"?fullpath="+path+"&&ford=false");
+     //    Task<HttpResponseMessage> task = client.SendAsync(message);
+     //    HttpResponseMessage response1 = task.Result;
+     //    response = task.Result;
+     //    status = response.ReasonPhrase;
+     //    int index = 1;
+     //    dirset = Newtonsoft.Json.JsonConvert.DeserializeObject<string[]>(response1.Content.ReadAsStringAsync().Result);
+     //    foreach (string f in dirset)
+     //    {
+     //        Console.Write("\n <dir> {0}. {1}", index++, f);
+     //    }
+     //    return dirset;
+     //}
 
      
 
-    static void download(TestClient tc)
-    {
+    //static void download(TestClient tc)
+    //{
 
-        Console.Write("\n  Choose available file to download:");
-        Console.Write("\n ------------------------------------------");
-        string dirpath = "../../uploads/";
+    //    Console.Write("\n  Choose available file to download:");
+    //    Console.Write("\n ------------------------------------------");
+    //    string dirpath = "../../uploads/";
         
-        string downloadf = "";
-        while (true)
-        {
+    //    string downloadf = "";
+    //    while (true)
+    //    {
             
-            string[] dirset = tc.GetdownloadDir(dirpath);
-            int index = dirset.Length;
-            string[] fileset = tc.GetdownloadFiles(dirpath, ++index);
-            int choice = 0;
-            int top = index+fileset.Length;
-            Console.Write("\n Please choose a file to download or open a directory:  ");
-            try
-            {
-                 choice = int.Parse(Console.ReadLine());
-            }
-            catch (System.FormatException)
-            {
-                continue;
-            }
+    //        string[] dirset = tc.GetdownloadDir(dirpath);
+    //        int index = dirset.Length;
+    //        string[] fileset = tc.GetdownloadFiles(dirpath, ++index);
+    //        int choice = 0;
+    //        int top = index+fileset.Length;
+    //        Console.Write("\n Please choose a file to download or open a directory:  ");
+    //        try
+    //        {
+    //             choice = int.Parse(Console.ReadLine());
+    //        }
+    //        catch (System.FormatException)
+    //        {
+    //            continue;
+    //        }
 
-            if (choice < index)
-            {
-                dirpath += dirset[choice - 1] + "/";
-                continue;
-            }
-            else if (choice < top)
-            {
-                downloadf = fileset[choice - 1];
-                break;
-            }
-            else continue;
-        }
-        tc.downLoadFile(downloadf);
-        Console.Write("\n Successful !!!!  ");
-        Console.ReadLine();
-    }
+    //        if (choice < index)
+    //        {
+    //            dirpath += dirset[choice - 1] + "/";
+    //            continue;
+    //        }
+    //        else if (choice < top)
+    //        {
+    //            downloadf = fileset[choice - 1];
+    //            break;
+    //        }
+    //        else continue;
+    //    }
+    //    tc.downLoadFile(downloadf);
+    //    Console.Write("\n Successful !!!!  ");
+    //    Console.ReadLine();
+    //}
     
     static void Main(string[] args)
     {
