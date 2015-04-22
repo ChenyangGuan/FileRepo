@@ -5,7 +5,7 @@
         Title="FileRepository DownloadWPF" Height="500" Width="800">
     <Grid>
         <TabControl Name="tabs" HorizontalAlignment="Left" Height="460" Margin="0,10,-0.4,0" VerticalAlignment="Top" Width="750" Grid.ColumnSpan="4" FontFamily="Tahoma" FontWeight="Bold" FontSize="12" >
-            <TabItem Header="Sever File Browser" >
+            <TabItem Header="Client File Browser" >
                 <Grid Background="White">
                     <TreeView x:Name="ClientdirectoryTreeView" Width="180" Height="387" Margin="12,12,0,0" 
           VerticalAlignment="Top" HorizontalAlignment="Left" >

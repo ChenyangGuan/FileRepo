@@ -116,6 +116,7 @@ namespace Client
 
     int openServerUpLoadFile(string fileName)
     {
+      
       message = new HttpRequestMessage();
       message.Method = HttpMethod.Get;
       string urlActn = "?fileName=" + fileName + "&open=upload";
@@ -127,13 +128,13 @@ namespace Client
     }
     //----< open file on client for Reading >------------------------------
 
-    FileStream openClientUpLoadFile(string fileName,string path)
+    FileStream openClientUpLoadFile(string fileName)
     {
     
       FileStream up;
       try
       {
-        up = new FileStream(path + "\\"+fileName, FileMode.Open);
+        up = new FileStream(fileName, FileMode.Open);
       }
       catch
       {
@@ -229,7 +230,21 @@ public List<string> GetDependencies(string filename){
         return fileset;
     
 }
-     
+     //----<upload Folder >-----------------------------------------------
+async public Task upLoadFolder(string foldername, string newname, string path)
+{
+    DirectoryInfo dir = new DirectoryInfo(foldername);
+    string filepath=path;
+    if (newname != "") filepath = newname+"\\";
+    foreach(FileInfo f in dir.GetFiles())
+    {
+        Task task = upLoadFile(f.FullName, filepath);
+    }
+    foreach (DirectoryInfo f in dir.GetDirectories())
+    {
+        Task task = upLoadFolder(f.FullName, "", path+f.Name+"\\");
+    }
+}
     //----< upLoad File >--------------------------------------------------
     /*
      *  Open server file for writing
@@ -239,23 +254,18 @@ public List<string> GetDependencies(string filename){
      *  Close server file
      *  Close client file
      */
-     public void upLoadFile(string filename,string path)
+     async public Task upLoadFile(string filename,string path)
     {
       Console.Write("\n  Attempting to upload file {0}", filename);
       Console.Write("\n --------------------------------------\n");
 
       Console.Write("\n  Sending get request to open file");
       Console.Write("\n ----------------------------------");
-      string filenameOnserver;
-      if (filename.IndexOf("\\") == -1)
-          filenameOnserver = path.Substring(path.LastIndexOf("\\")) + "\\" + filename;
-      else
-      {
-          filenameOnserver = "\\"+filename;
-      }
-      openServerUpLoadFile(filenameOnserver);
+      string FilenameOnServer = Path.GetFullPath("../../../RoleBase/Uploads/")+path+filename.Substring(filename.LastIndexOf("\\"));
+      openServerUpLoadFile(FilenameOnServer);
       Console.Write("\n  Response status = {0}\n", status);
-      FileStream up = openClientUpLoadFile(filename,path);
+      
+      FileStream up = openClientUpLoadFile(filename);
 
       Console.Write("\n  Sending Post requests to send blocks:");
       Console.Write("\n ---------------------------------------");

@@ -134,13 +134,12 @@ namespace FileService.Controllers
                 }
                 else if (open == "upload")
                 {
-                    path = path + "Uploads";
-                    string currentFileSpec = path + fileName;
-                    string dirname = currentFileSpec.Substring(0, currentFileSpec.LastIndexOf("\\"));                   
+
+                    string dirname = fileName.Substring(0, fileName.LastIndexOf("\\"));                   
                     DirectoryInfo dir = new DirectoryInfo(dirname);
                     if(dir.Exists==false) Directory.CreateDirectory(dirname);
                     
-                    fs = new FileStream(currentFileSpec, FileMode.OpenOrCreate);
+                    fs = new FileStream(fileName, FileMode.OpenOrCreate);
                     session.saveStream(fs, sessionId);
                 }
                 else  // close FileStream

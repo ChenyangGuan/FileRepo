@@ -26,18 +26,22 @@ namespace UploadWPF
     public partial class MainWindow : Window
     {
         
-        IAsyncResult cbResult;
+        
         Client.TestClient tc;
-        string foldername;
+        string Foldername;
+        string NewFoldername;
+        string SelectFolder;
+        string Filename;
         public MainWindow()
         {
             InitializeComponent();
             string url = "http://localhost:55664/FileService/api/File";
             tc = new Client.TestClient(url);
-            foldername = "";
+            Foldername = "";
+            SelectFolder = "";
+            NewFoldername = "";
             tabs.Items.Remove(RenameTab);
-            Directory_Load();
-            fileInfo.AutoGeneratingColumn += fileInfoColumn_Load;
+            Refresh();
         }
 
         private void Directory_Load()
@@ -53,11 +57,25 @@ namespace UploadWPF
             directoryTreeView.ItemsSource = directory;
         }
 
+        private void SelectedFolder_Load(string path)
+        {
+            var directory = new ObservableCollection<DirRecord>();
+
+            directory.Add(
+                new DirRecord
+                {
+                    Info = new DirectoryInfo(path)
+                }
+                );
+            SelectedFolderTreeView.ItemsSource = directory;
+            
+        }
+
         private void fileInfoColumn_Load(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {
             List<string> requiredProperties = new List<string>
             {
-                "Name", "Length", "FullName",  "LastWriteTime"
+                "Name", "Length", "Extension",  "LastWriteTime"
             };
 
             if (!requiredProperties.Contains(e.PropertyName))
@@ -69,66 +87,24 @@ namespace UploadWPF
                 e.Column.Header = e.Column.Header.ToString();
             }
         }
+
+
         void showPath(string path)
         {
             pathpool.Content = path;
         }
         /*-- invoke on UI thread --------------------------------*/
 
-        void addFile(string file)
+
+        private void Refresh()
         {
-            filepool.Items.Add(file);
-        }
-        void search(string path, string []pattern)
-        {
-            /* called on asynch delegate's thread */
-            if (Dispatcher.CheckAccess())
-                showPath(path);
-            else
-                Dispatcher.Invoke(
-                  new Action<string>(showPath),
-                  System.Windows.Threading.DispatcherPriority.Background,
-                  new string[] { path }
-                );
-            string[] files;
-            if (pattern.Length == 1 && pattern[0] == ".*") 
-                files = System.IO.Directory.GetFiles(path, "*.*").ToArray();
-             else files = System.IO.Directory.GetFiles(path, "*.*").Where(f => pattern.Contains(new FileInfo(f).Extension.ToLower())).ToArray();
-            foreach (string file in files)
-            {
-                if (Dispatcher.CheckAccess())
-                    addFile(file);
-                else
-                    Dispatcher.Invoke(
-                      new Action<string>(addFile),
-                      System.Windows.Threading.DispatcherPriority.Background,
-                      new string[] { file }
-                    );
-            }
-            string[] dirs = System.IO.Directory.GetDirectories(path);
-            foreach (string dir in dirs)
-            {
-                if (Dispatcher.CheckAccess())
-                    addFile(dir);
-                Dispatcher.Invoke(
-                      new Action<string>(addFile),
-                      System.Windows.Threading.DispatcherPriority.Background,
-                      new string[] { dir }
-                    );
-            }
-            if (Dispatcher.CheckAccess())
-                showPath(path);
-            else
-                Dispatcher.Invoke(
-                  new Action<string>(showPath),
-                  System.Windows.Threading.DispatcherPriority.Background,
-                  new string[] { path }
-                );
+            Directory_Load();
+            fileInfo.AutoGeneratingColumn += fileInfoColumn_Load;
         }
 
         private void SelectButton_Click(object sender, RoutedEventArgs e)
         {
-            filepool.Items.Clear();
+            
             FolderBrowserDialog dlg = new FolderBrowserDialog();
             string path = AppDomain.CurrentDomain.BaseDirectory;
             dlg.SelectedPath = path;
@@ -136,26 +112,16 @@ namespace UploadWPF
             if (result == System.Windows.Forms.DialogResult.OK)
             {
                 path = dlg.SelectedPath;
+                showPath(path);
+                SelectFolder = path;
                 hiddenpath.Text = path;
-                string []pattern = {".*"};
-                Action<string, string[]> proc = this.search;
-                cbResult = proc.BeginInvoke(path, pattern, null, null);
-                
+                SelectedFolder_Load(path) ;
+                SelectedFolderFileInfo.AutoGeneratingColumn += fileInfoColumn_Load;
             }
             
         }
-      async private Task uploadFiles(string path){
-            DirectoryInfo dir = new DirectoryInfo(path);
-            
-            foreach (FileInfo f in dir.GetFiles())
-            {
-                string filename = f.Name;
-                if (foldername != "")
-                {
-                    filename = foldername + "\\" + filename;
-                }
-              await Task.Run(()=>tc.upLoadFile(filename, path));
-            }
+      async private Task Upload_Folder(){
+          await Task.Run(() => tc.upLoadFolder(Foldername, NewFoldername, SelectFolder.Substring(SelectFolder.LastIndexOf("\\")+1)+"\\"));
             string messageBoxText = "Upload Completed!";
             string caption = "Upload Result";
             MessageBoxButton button = MessageBoxButton.OK;
@@ -164,14 +130,29 @@ namespace UploadWPF
             Directory_Load();
             fileInfo.AutoGeneratingColumn += fileInfoColumn_Load;
         }
-        private void Upload_Async_Click(object sender, RoutedEventArgs e)
+      async private Task Upload_file()
+      {
+          await Task.Run(() => tc.upLoadFile(Filename, SelectFolder.Substring(SelectFolder.LastIndexOf("\\")+1)+"\\"));
+          string messageBoxText = "Upload Completed!";
+          string caption = "Upload Result";
+          MessageBoxButton button = MessageBoxButton.OK;
+          MessageBoxImage icon = MessageBoxImage.Information;
+          System.Windows.MessageBox.Show(messageBoxText, caption, button, icon);
+          Refresh();
+      }
+
+        private void upload(object sender, RoutedEventArgs e)
         {
-            string path = hiddenpath.Text;
-            
-            Task task= uploadFiles(path);
-            
+            Task task = Upload_file();
         }
 
+        private void upload_folder(object sender, RoutedEventArgs e)
+        {
+            tabs.Items.Add(RenameTab);
+            RenameTab.IsSelected = true;
+            ChooseFolderTab.IsEnabled = false;
+            
+        }
         private void Tab_DoubleClick(object sender, EventArgs e)
         {
            
@@ -181,30 +162,73 @@ namespace UploadWPF
 
 
        
-        private void Rename_Click(object sender, RoutedEventArgs e)
+       
+
+        private void ShowMenu(object sender, RoutedEventArgs e)
         {
-            tabs.Items.Add(RenameTab);
-            RenameTab.IsSelected = true;
+            object temp;
+            temp = SelectedFolderFileInfo.SelectedItem;
+            if (temp == null) return;
+            var tmp = temp as FileInfo;
+            Filename = tmp.FullName;
+            System.Windows.Controls.ContextMenu menu = SelectedFolderFileInfo.FindResource("uploadMenu") as System.Windows.Controls.ContextMenu;
+            menu.PlacementTarget = sender as System.Windows.Controls.Button;
+            menu.IsOpen = true;
         }
 
-         private void Confirm_Click(object sender, RoutedEventArgs e)
+        private void ShowTreeMenu(object sender, RoutedEventArgs e)
         {
-            string[] AllNumIsSame = {"’", "”", "。", ";", ":", "<", ">", "?", "|", "!", "#", "$", "%", "^", "&", "*", "(", ")", "+", "-", "."};
-            foreach(string chars in AllNumIsSame){
-                if (NewName.Text.IndexOf(chars) != -1)
-                {
-                    Info.Content = "Can't contain the character " + chars;
-                    return;
-                }
-            }
-            foldername = NewName.Text;
-            System.Windows.Controls.Button but = sender as System.Windows.Controls.Button;
-            var parent = but.Parent as FrameworkElement;
-            Info.Content = "";           
-            var tab = parent.FindName("RenameTab");
-            this.tabs.Items.Remove(tab);
-            Renameinfo.Content = "Rename folder name completed.Use new folder name: "+foldername;
+            object temp;
+            temp = SelectedFolderTreeView.SelectedItem;
+            if (temp == null) return;
+            var tmp = temp as DirRecord;
+            Foldername = tmp.Info.FullName;
+            System.Windows.Controls.ContextMenu menu = SelectedFolderTreeView.FindResource("uploadFolderMenu") as System.Windows.Controls.ContextMenu;
+            menu.PlacementTarget = sender as System.Windows.Controls.Button;
+            menu.IsOpen = true;
         }
+
+        private void Confirm_Click(object sender, RoutedEventArgs e)
+        {
+            NewFoldername = NewName.Text.Trim();
+            this.tabs.Items.Remove(RenameTab);
+            ChooseFolderTab.IsEnabled = true;
+            Task task = Upload_Folder();
+        }
+
+        private void Cancel_Click(object sender, RoutedEventArgs e)
+        {
+            this.tabs.Items.Remove(RenameTab);
+            ChooseFolderTab.IsEnabled = true;
+            Task task = Upload_Folder();
+        }
+        // private void Confirm_Click(object sender, RoutedEventArgs e)
+        //{
+        //    if (NewName.Text.Trim() == "")
+        //    {
+        //        Renameinfo.Content = "                       Use default folder name, same as upload folder.";
+        //        return;
+        //    }
+        //    string[] AllNumIsSame = {"’", "”", "。", ";", ":", "<", ">", "?", "|", "!", "#", "$", "%", "^", "&", "*", "(", ")", "+", "-", "."};
+        //    foreach(string chars in AllNumIsSame){
+        //        if (NewName.Text.IndexOf(chars) != -1)
+        //        {
+        //            Info.Content = "Can't contain the character " + chars;
+        //            return;
+        //        }
+        //    }
+        //    foldername = NewName.Text;
+        //    System.Windows.Controls.Button but = sender as System.Windows.Controls.Button;
+        //    var parent = but.Parent as FrameworkElement;
+        //    Info.Content = "";           
+        //    var tab = parent.FindName("RenameTab");
+        //    this.tabs.Items.Remove(tab);
+        //    Renameinfo.Content = "Rename folder name completed.Use new folder name: "+foldername;
+        //}
+
+        
+
+       
         
         
     }
