@@ -1,6 +1,10 @@
-﻿body {
+﻿html{
+    height:100%;
+}
+body {
     padding-top: 50px;
-    padding-bottom: 20px;
+   
+    height: 100%;
 }
 
 /* Set padding to keep content from hitting the edges */
@@ -39,4 +43,97 @@ input[type="checkbox"].input-validation-error {
 
 .validation-summary-valid {
     display: none;
+}
+
+.navbar-custom{
+    margin-bottom: 10px;
+    color:black;
+    font-weight:100;
+    border-bottom: 1px solid rgba(255,255,255,.3);
+    text-transform: uppercase;
+    font-family: Montserrat,"Helvetica Neue",Helvetica,Arial,sans-serif;
+	/*when window width < menu bar length*/
+    background-color: #fff;
+	opacity:0.8;
+}
+
+#bgindex {height:100%;
+	background: url('./Images/BG.png') no-repeat center center fixed;
+	 -webkit-background-size: cover;
+    -moz-background-size: cover;
+    background-size: cover;
+    -o-background-size: cover;
+    opacity:0.8;
+}
+
+#bgfeature {height:100%;
+	background: url('./Images/background.png') no-repeat center center fixed;
+	 -webkit-background-size: cover;
+    -moz-background-size: cover;
+    background-size: cover;
+    -o-background-size: cover;
+    opacity:0.8;
+}
+
+
+.wrap{
+     min-height: 100%;
+     height: auto !important;
+	 margin: 0 auto -30px;
+     left: 10%;
+     width: 80%;
+}
+.footer {
+  text-align:center;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 30px;
+  padding-top:5px;
+  background: #fff;
+  opacity:0.8;
+
+}
+.row-custom{
+    background: none;
+}
+.panel-custom{
+    background:none;
+}
+.jumbotron-custom{
+    background-color: rgba(144, 146, 154, 1);
+    width: 100%;
+    
+}
+.jumbotron-leftheader{
+    max-width:50%;
+}
+
+.introduction{
+    max-width:50%;
+    height:200px;
+    background: url('./Images/feature.png') no-repeat left;
+    background-size: auto 200px;
+    
+}
+
+
+.thumbnail-img{
+    width:20%;
+}
+.thunbnail-custom{
+    border-style:none;
+    background: rgba(144, 146, 154, 1);
+}
+
+.a-custom{
+    color:#edf624;
+}
+
+.header-custom{
+    color:white;
+}
+
+.text-custom{
+    color:rgb(230, 227, 247);
 }

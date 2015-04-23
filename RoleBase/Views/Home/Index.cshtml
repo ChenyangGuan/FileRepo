@@ -1,36 +1,95 @@
 ﻿@{
     ViewBag.Title = "Home Page";
 }
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
 @Scripts.Render("~/bundles/jquery")
-<div class="jumbotron">
-    <h1>File Repository</h1>
-    <p class="lead">This website will support the storage, retrieval, and viewing of source code files.</p>
-    <p><a href="/Home/Help" class="btn btn-primary btn-large">Learn more &raquo;</a></p>
+<div class="jumbotron jumbotron-custom">
+    <div class="container">
+        <div class="row">
+            <div class="jumbotron-leftheader col-md-6">
+                <h1>File Repository</h1>
+                <p class="lead">This website will support the storage, retrieval, and viewing of source code files.</p>
+                <p><a href="/Home/Help" class="btn btn-primary btn-large">Learn more &raquo;</a></p>
+            </div>
+            <div class="col-md-6 introduction">
+            </div>
+        </div>
+    </div> 
 </div>
 
-<div class="row">
-    <div class="col-md-10">
-        <dl>
-            <dt>Role-based Activities</dt>
-            <dd>
-                There are 3 roles in this website.
-                <ul>
-                    <li>
-                        <strong>Normal Users:</strong> Just view and download the files in the server.
-                    </li>
-                    <li>
-                        <strong>Developers:</strong> Upload files; Create directories and specify files dependencies.
-                    </li>
-                    <li>
-                        <strong>Administrator:</strong> Manage Roles; Rename Directories'; Delete files.
-                    </li>               
-                </ul>
-            </dd>
 
-        </dl>
+<div class="panel panel-custom">
+    <div>
+        <div class="row row-custom">
+            <div class="col-sm-6 col-md-4">
+                <div class="thumbnail thunbnail-custom">
+                    <img class="thumbnail-img" src="http://cdn.flaticon.com/png/256/10003.png" alt="Role">
+                    <div class="caption">
+                        <h3 style="text-align:center">Role-based Activities</h3>
+                        <p> There are 3 roles in this website.</p>
+                        <ul>
+                            <li>
+                                <strong>Normal Users:</strong> Just view and download the files in the server.
+                            </li>
+                            <li>
+                                <strong>Developers:</strong> Upload files; Create directories and specify files dependencies.
+                            </li>
+                            <li>
+                                <strong>Administrator:</strong> Manage Roles; Rename Directories'; Delete files.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-sm-6 col-md-4">
+                <div class="thumbnail thunbnail-custom">
+                    <img class="thumbnail-img" src="http://cdn.flaticon.com/png/256/13311.png" alt="Search">
+                    <div class="caption">
+                        <h3 style="text-align:center">Easy View Files</h3>
+                        <p> View Files on the server quickly and easily.</p>
+                        <p> Support File style:</p>
+                        <ul>
+                            <li>
+                                <strong>.jpg/.png</strong> Picture Files
+                            </li>
+                            <li>
+                                <strong>.txt/.cs/.cpp/.h/..</strong>Any text files but not including .doc
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-sm-6 col-md-4">
+                <div class="thumbnail thunbnail-custom">
+                    <img class="thumbnail-img" src="http://cdn.flaticon.com/png/256/9922.png" alt="Setting">
+                    <div class="caption">
+                        <h3 style="text-align:center">Conveniently setting and use</h3>
+                        <ul>
+                            <li>
+                                <strong>Edit personal profile quickly</strong>
+                            </li>
+                            <li>
+                                <strong>Administrator manage Users and Role easily</strong>
+                            </li>
+                            <li>
+                                <strong>Support Upload, Download & Specify file dependencies</strong>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
+</div>
+    
     
     
     
    
-</div>

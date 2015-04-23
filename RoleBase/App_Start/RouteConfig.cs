@@ -1,7 +1,7 @@
 ﻿using System.Web.Mvc;
 using System.Web.Routing;
 
-namespace IdentitySample
+namespace FileRepository
 {
     public class RouteConfig
     {

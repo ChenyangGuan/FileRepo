@@ -35,7 +35,7 @@ namespace UploadWPF
         public MainWindow()
         {
             InitializeComponent();
-            string url = "http://localhost:55664/FileService/api/File";
+            string url = "http://localhost:55664/api/File";
             tc = new Client.TestClient(url);
             Foldername = "";
             SelectFolder = "";

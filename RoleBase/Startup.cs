@@ -1,6 +1,6 @@
 ﻿using Owin;
 
-namespace IdentitySample
+namespace FileRepository
 {
     public partial class Startup
     {

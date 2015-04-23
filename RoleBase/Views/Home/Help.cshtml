@@ -1,22 +1,24 @@
 ﻿@{
     ViewBag.Title = "Help";
 }
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
 @Scripts.Render("~/bundles/jquery")
-<h2>Help</h2>
+<h2 class="header-custom"><span class="glyphicon glyphicon-question-sign"></span> Help</h2>
 <div class="row">
     <div class="col-md-8">
-        <h3>About File Repository</h3>
-        <p>
+        <h3 class="header-custom">About File Repository</h3>
+        <p class="text-custom">
             This website supports the storage, retrieval, and viewing of source code
             files. A user will be able to upload a file or folder, view any of the files in a folder, specify dependency information,
             and retrieve a selected file and all its dependencies, all from a browser. The web service supports synchronizing the
             contents of a server folder with a specified folder on the client machine.
         </p>
-        <p>
+        <p class="text-custom">
             It supports:
         </p>
-        <ul>
-
+        <ul class="text-custom">
             <li>Uploading a specified client file to a selected folder on the server.</li>
             <li>
                 Creating new folders on the server.
@@ -33,9 +35,9 @@
         </ul>
     </div>
     <div class="col-md-4">
-        <h3>About the Roles</h3>
-        <p>In this websites, there are 3 roles:</p>
-        <ul>
+        <h3 class="header-custom">About the Roles</h3>
+        <p class="text-custom">In this websites, there are 3 roles:</p>
+        <ul class="text-custom">
             <li>
                 <strong>Normal Users:</strong> Just view and download the files in the server.
             </li>

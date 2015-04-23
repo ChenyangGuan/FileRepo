@@ -8,9 +8,9 @@
     @Scripts.Render("~/bundles/modernizr")
     <link rel="stylesheet" type="text/css" href="~/Scripts/themes/default/easyui.css">
     <link rel="stylesheet" type="text/css" href="~/Scripts/themes/icon.css">
-    
+
 </head>
-<body id="bgindex">
+<body id="bgfeature">
     <div class="wrap">
         @Html.Partial("_NavBar")
         <div id="mainbody">
@@ -18,14 +18,15 @@
         </div>
 
     </div>
-        <footer class="footer">
-            <div class="container">
-                <p class="text-center" style="font-size:15px;">&copy; @DateTime.Now.Year - File Repository - All rights reserved - copyright for Chenyang Guan</p>
-            </div>
-        </footer>
-        @*@Scripts.Render("~/bundles/jquery")*@
-        @Scripts.Render("~/bundles/bootstrap")
-        @RenderSection("scripts", required: false)
+    <footer class="footer">
+        <div class="container">
+            <p class="text-center" style="font-size:15px;">&copy; @DateTime.Now.Year - File Repository - All rights reserved - copyright for Chenyang Guan</p>
+        </div>
+    </footer>
+    @*@Scripts.Render("~/bundles/jquery")*@
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
 
 </body>
 </html>
+

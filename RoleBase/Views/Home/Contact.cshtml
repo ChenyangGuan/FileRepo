@@ -1,19 +1,22 @@
 ﻿@{
     ViewBag.Title = "Contact";
 }
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
 @Scripts.Render("~/bundles/jquery")
-<hgroup>
-    <h2>@ViewBag.Title.</h2>
-    <h3>@ViewBag.Message</h3>
-</hgroup>
-<div>
-    <address>
-        60 Presidential PLZ<br />
-        Syracuse, NY 13202<br />        
-    </address>
 
-    <address>
-        <i class="icon-envelope"></i><strong>Phone:</strong>   3152893962<br />
-        <i class="icon-envelope"></i><strong>Email:</strong> <a href="cguan02@syr.edu">cguan02@syr.edu</a>
-    </address>
-</div>
+    <hgroup>
+        <h2 class="header-custom"><span class="glyphicon glyphicon-envelope"></span> @ViewBag.Title</h2>
+        <h3 class="text-custom"><span class="glyphicon glyphicon-user"></span> Chenyang Guan</h3>
+    </hgroup>
+    <div>
+        <address class="text-custom">
+            60 Presidential PLZ<br />
+            Syracuse, NY 13202<br />
+        </address>
+        <address class="text-custom">
+            <i class="icon-envelope"></i><strong>Phone:</strong>   3152893962<br />
+            <i class="icon-envelope"></i><strong>Email:</strong> <a class="a-custom" href="cguan02@syr.edu">cguan02@syr.edu</a>
+        </address>
+    </div>
