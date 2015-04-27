@@ -124,6 +124,14 @@ namespace FileRepository.Models
                 var roleresult = roleManager.Create(role);
             }
 
+            //Create Role Normal User if it does not exist
+            var role2 = roleManager.FindByName("NormalUser");
+            if (role2 == null)
+            {
+                role2 = new ApplicationRole("NormalUser");
+                var roleresult = roleManager.Create(role2);
+            }
+
             var user = userManager.FindByName(name);
             if (user == null) {
                 user = new ApplicationUser { UserName = name, Email = name,nickname="admin" };

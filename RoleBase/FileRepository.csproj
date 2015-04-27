@@ -30,6 +30,17 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <IncludeIisSettings>false</IncludeIisSettings>
+    <PublishDatabaseSettings>
+      <Objects>
+        <ObjectGroup Name="DefaultConnection-Deployment" Order="1">
+          <Destination Path="" />
+          <Object Type="DbFullSql" Enabled="False">
+            <PreSource Path="Data Source=%28LocalDb%29\v11.0%3bAttachDbFilename=|DataDirectory|\User.mdf%3bInitial Catalog=aspnet-FileRepo-20150216124217%3bIntegrated Security=True" ScriptSchema="True" ScriptData="True" CopyAllFullTextCatalogs="False" DriDefaults="True" />
+            <Source Path="obj\Debug\AutoScripts\DefaultConnection-Deployment_SchemaAndData.sql" Transacted="True" />
+          </Object>
+        </ObjectGroup>
+      </Objects>
+    </PublishDatabaseSettings>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -165,11 +176,23 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\CurUser.xml" />
+    <Content Include="App_Data\FileDependency.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="App_Data\User.mdf" />
+    <Content Include="App_Data\User_log.ldf">
+      <DependentUpon>User.mdf</DependentUpon>
+    </Content>
+    <Content Include="Content\Images\background.png" />
+    <Content Include="Content\Images\BG.png" />
+    <Content Include="Content\Images\feature.png" />
     <Content Include="Content\style.css" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="packages.config" />
+    <None Include="Properties\PublishProfiles\FileRepository.pubxml" />
     <None Include="Scripts\jquery-2.1.3.intellisense.js" />
     <Content Include="Scripts\jquery-2.1.3.js" />
     <Content Include="Scripts\jquery-2.1.3.min.js" />
@@ -376,11 +399,13 @@
     <Content Include="Scripts\themes\icons\cancel.png" />
     <Content Include="Scripts\themes\icons\clear.png" />
     <Content Include="Scripts\themes\icons\cut.png" />
+    <Content Include="Scripts\themes\icons\dependency.png" />
     <Content Include="Scripts\themes\icons\download.png" />
     <Content Include="Scripts\themes\icons\edit_add.png" />
     <Content Include="Scripts\themes\icons\edit_remove.png" />
     <Content Include="Scripts\themes\icons\filesave.png" />
     <Content Include="Scripts\themes\icons\filter.png" />
+    <Content Include="Scripts\themes\icons\folder.png" />
     <Content Include="Scripts\themes\icons\help.png" />
     <Content Include="Scripts\themes\icons\large_chart.png" />
     <Content Include="Scripts\themes\icons\large_clipart.png" />
@@ -402,6 +427,7 @@
     <Content Include="Scripts\themes\icons\sum.png" />
     <Content Include="Scripts\themes\icons\tip.png" />
     <Content Include="Scripts\themes\icons\undo.png" />
+    <Content Include="Scripts\themes\icons\upload.png" />
     <Content Include="Scripts\themes\metro\accordion.css" />
     <Content Include="Scripts\themes\metro\calendar.css" />
     <Content Include="Scripts\themes\metro\combo.css" />
@@ -450,6 +476,9 @@
     <Content Include="Scripts\themes\metro\tree.css" />
     <Content Include="Scripts\themes\metro\validatebox.css" />
     <Content Include="Scripts\themes\metro\window.css" />
+    <Content Include="Uploads\test\123.txt" />
+    <Content Include="Uploads\test\night.jpg" />
+    <Content Include="Uploads\test\xiana.jpg" />
     <Content Include="Views\Developers\Index.cshtml" />
     <Content Include="Views\NormalUsers\Index.cshtml" />
     <Content Include="Views\Message\RegisterSuccess.cshtml" />
@@ -550,10 +579,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="App_Data\" />
-    <Folder Include="Uploads\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

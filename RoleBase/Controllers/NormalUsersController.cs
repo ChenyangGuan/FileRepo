@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.Xml.Linq;
@@ -11,7 +12,7 @@ using System.Xml.Linq;
 namespace RoleBase.Controllers
 {
     [Authorize(Roles = "NormalUser" )]
-    public class NormalUsersController : Controller
+    public class NormalUsersController : AsyncController
     {
               
         //
@@ -76,6 +77,9 @@ namespace RoleBase.Controllers
             f = Searchfile(rootpath, index);
             dataset.Add(f);
             return Json(dataset, JsonRequestBehavior.AllowGet);
+
+           
+            
         }
         #endregion
 
@@ -168,8 +172,9 @@ namespace RoleBase.Controllers
         //GET
         //Download
         [AllowAnonymous]
-        public ActionResult Download(string fullpath)
+        public  ActionResult Download(string fullpath)
         {
+            AsyncManager.OutstandingOperations.Increment();
             bool depen = false;
             if (fullpath.IndexOf("[depen]") != -1)
             {

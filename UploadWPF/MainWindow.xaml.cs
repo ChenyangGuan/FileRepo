@@ -35,7 +35,8 @@ namespace UploadWPF
         public MainWindow()
         {
             InitializeComponent();
-            string url = "http://localhost:55664/api/File";
+           // string url = "http://localhost:55664/api/File";
+            string url = "http://localhost/api/File";
             tc = new Client.TestClient(url);
             Foldername = "";
             SelectFolder = "";
@@ -47,11 +48,11 @@ namespace UploadWPF
         private void Directory_Load()
         {
             var directory = new ObservableCollection<DirRecord>();
-
+            string path = tc.getServerFileFolder();
             directory.Add(
                 new DirRecord
                 {
-                    Info=new DirectoryInfo("../../../RoleBase/Uploads/")
+                    Info=new DirectoryInfo(path)
                 }
                 );
             directoryTreeView.ItemsSource = directory;

@@ -25,7 +25,8 @@ namespace Client
     private HttpClient client = new HttpClient();
     private HttpRequestMessage message;
     private HttpResponseMessage response = new HttpResponseMessage();
-    private string urlBase;
+    public string urlBase{get;set;}
+    
     public string status { get; set; }
 
     //----< set destination url >------------------------------------------
@@ -46,8 +47,22 @@ namespace Client
     //  string[] files = Newtonsoft.Json.JsonConvert.DeserializeObject<string[]>(response1.Content.ReadAsStringAsync().Result);
     //  return files;
     //}
-    //----< open file on server for reading >------------------------------
 
+
+    public string getServerFileFolder()
+    {
+        message = new HttpRequestMessage();
+        message.Method = HttpMethod.Get;
+        message.RequestUri = new Uri(urlBase);
+        Task<HttpResponseMessage> task = client.SendAsync(message);
+        HttpResponseMessage response1 = task.Result;
+        response = task.Result;
+        status = response.ReasonPhrase;
+        string path=Newtonsoft.Json.JsonConvert.DeserializeObject<string>(response1.Content.ReadAsStringAsync().Result);
+        return path;
+    }
+    //----< open file on server for reading >------------------------------
+    
     int openServerDownLoadFile(string fileName)
     {
       message = new HttpRequestMessage();
@@ -96,7 +111,7 @@ namespace Client
       Task<HttpResponseMessage> task = client.SendAsync(message);
       HttpResponseMessage response = task.Result;
       Task<byte[]> taskb = response.Content.ReadAsByteArrayAsync();
-      byte[] Block = taskb.Result;
+      byte[] Block =taskb.Result;
       status = response.ReasonPhrase;
       return Block;
     }
@@ -162,7 +177,7 @@ namespace Client
         DirectoryInfo dir = new DirectoryInfo(foldername);
         foreach (FileInfo f in dir.GetFiles())
         {
-            await Task.Run(() => this.downLoadFile(f.FullName));
+            await Task.Run(() => this.downLoadFileAsync(f.FullName));
         }
             
     }
@@ -176,7 +191,7 @@ namespace Client
      *  Close server file
      *  Close client file
      */
-    public void downLoadFile(string filename)
+    public async void downLoadFileAsync(string filename)
     {
       Console.Write("\n  Attempting to download file {0} ", filename);
       Console.Write("\n ------------------------------------------\n");
@@ -195,6 +210,7 @@ namespace Client
       {
         int blockSize = 204800;
         byte[] Block = getFileBlock(down, blockSize);
+        
         Console.Write("\n  Response status = {0}", status);
         Console.Write("\n  received block of size {0} bytes\n", Block.Length);
         if (Block.Length == 0 || blockSize <= 0)
@@ -238,11 +254,11 @@ async public Task upLoadFolder(string foldername, string newname, string path)
     if (newname != "") filepath = newname+"\\";
     foreach(FileInfo f in dir.GetFiles())
     {
-        Task task = upLoadFile(f.FullName, filepath);
+        await upLoadFile(f.FullName, filepath);
     }
     foreach (DirectoryInfo f in dir.GetDirectories())
     {
-        Task task = upLoadFolder(f.FullName, "", path+f.Name+"\\");
+       await upLoadFolder(f.FullName, "", path+f.Name+"\\");
     }
 }
     //----< upLoad File >--------------------------------------------------
@@ -261,7 +277,8 @@ async public Task upLoadFolder(string foldername, string newname, string path)
 
       Console.Write("\n  Sending get request to open file");
       Console.Write("\n ----------------------------------");
-      string FilenameOnServer = Path.GetFullPath("../../../RoleBase/Uploads/")+path+filename.Substring(filename.LastIndexOf("\\"));
+      string serveruploadfolder = getServerFileFolder();
+      string FilenameOnServer = Path.GetFullPath(serveruploadfolder)+path+filename.Substring(filename.LastIndexOf("\\")+1);
       openServerUpLoadFile(FilenameOnServer);
       Console.Write("\n  Response status = {0}\n", status);
       

@@ -1,4 +1,4 @@
-﻿html{
+html{
     height:100%;
 }
 body {
@@ -101,7 +101,7 @@ input[type="checkbox"].input-validation-error {
     background:none;
 }
 .jumbotron-custom{
-    background-color: rgba(144, 146, 154, 1);
+    background-color: rgba(225, 237, 242, 0.4);
     width: 100%;
     
 }
@@ -123,7 +123,8 @@ input[type="checkbox"].input-validation-error {
 }
 .thunbnail-custom{
     border-style:none;
-    background: rgba(144, 146, 154, 1);
+    height:320px;
+    background: rgba(177, 185, 185, 0.71);
 }
 
 .a-custom{
@@ -137,3 +138,4 @@ input[type="checkbox"].input-validation-error {
 .text-custom{
     color:rgb(230, 227, 247);
 }
+

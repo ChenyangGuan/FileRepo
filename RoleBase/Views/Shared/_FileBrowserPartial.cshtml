@@ -23,6 +23,27 @@
     </div>
 </div>
 
+<div id="treemenu" class="easyui-menu" style="width:120px;">
+    <div iconcls="icon-search" plain="true" onclick="ViewFile()">View</div>
+    @if (User.IsInRole("NormalUser"))
+    {
+        <div iconcls="icon-dependency" plain="true" onclick="ShowDependency()">Show Dependencies</div>
+        <div iconcls="icon-download" plain="true" onclick="DownloadInfo()">Download</div>
+    }
+    else if (User.IsInRole("Developer"))
+    {
+        <div iconcls="icon-upload" plain="true" onclick="Upload()">Upload Files</div>
+        <div iconcls="icon-folder" plain="true" onclick="CreateFolder()">Create Folder</div>
+        <div iconcls="icon-dependency" plain="true" onclick="ShowDependency()">Show Dependencies</div>
+
+    }
+    else if (User.IsInRole("Admin"))
+    {
+        <div iconcls="icon-cancel" plain="true" onclick="DeleteFiles()">Delete Files</div>
+        <div iconcls="icon-edit" plain="true" onclick="RenameFolder()">Rename Folder</div>
+    }
+</div>
+
 <div>
     <div id="showfiles" style="padding-left:10px;float:left;width:45%">
         <div id="filepanel" style="float:left;display:block;height:500px">
@@ -85,9 +106,19 @@
         $('#filestree').treegrid('unselectAll');
     }
 
+    function onContextMenu(e,row){
+        e.preventDefault();
+        $(this).treegrid('select', row.id);
+        $('#treemenu').menu('show',{
+            left: e.pageX,
+            top: e.pageY
+        });
+    }
 
     $("#filestree").treegrid({
         method: 'get',
+        animate: true,
+        onContextMenu: onContextMenu,
         rownumbers: false,
         idField: 'id',
         treeField: 'FileName',
@@ -166,7 +197,7 @@
         var fullpath = rows[i].FullPath;
         if (fullpath == "NULL") return;
         var filename = fullpath.substr(fullpath.lastIndexOf("\\") + 1);
-        if (filename.indexOf(".jpg") != -1 || filename.indexOf(".png") != -1) {
+        if (filename.toLowerCase().indexOf(".jpg") != -1 || filename.toLowerCase().indexOf(".png") != -1) {
             var filepanel = $('#picpanel');
             filepanel.panel({
                 width: 530,

@@ -31,7 +31,8 @@ namespace DownloadWPF
         public MainWindow()
         {
             InitializeComponent();
-            string url = "http://localhost:55664/api/File";
+            //string url = "http://localhost:55664/api/File";
+            string url = "http://localhost/api/File";
             tc = new Client.TestClient(url);
             foldername = "";
             Filename = "";
@@ -46,11 +47,12 @@ namespace DownloadWPF
         private void Directory_Load()
         {
             var directory = new ObservableCollection<DirRecord>();
-
+            string path = tc.getServerFileFolder();
+            
             directory.Add(
                 new DirRecord
                 {
-                    Info=new DirectoryInfo("../../../RoleBase/Uploads/")
+                    Info=new DirectoryInfo(path)
                 }
                 );
             directoryTreeView.ItemsSource = directory;
@@ -84,45 +86,47 @@ namespace DownloadWPF
         }
 
 
-        private void Download(object sender, RoutedEventArgs e)
+        private async void Download(object sender, RoutedEventArgs e)
         {
-            Task task = downloadFiles(Filename);
+            await downloadFileAsync(Filename);
+            string messageBoxText = "Download Completed!";
+            string caption = "Download Result";
+            MessageBoxButton button = MessageBoxButton.OK;
+            MessageBoxImage icon = MessageBoxImage.Information;
+            System.Windows.MessageBox.Show(messageBoxText, caption, button, icon);
+            RefreshTabs();
         }
 
-        private void DownloadWithDepen(object sender, RoutedEventArgs e)
+        private async void DownloadWithDepen(object sender, RoutedEventArgs e)
         {
-            Task task = downloadDepen(Filename);
+            await downloadDepenAsync(Filename);
+            string messageBoxText = "Download Completed!";
+            string caption = "Download Result";
+            MessageBoxButton button = MessageBoxButton.OK;
+            MessageBoxImage icon = MessageBoxImage.Information;
+            System.Windows.MessageBox.Show(messageBoxText, caption, button, icon);
+            RefreshTabs();
         }
 
         //Download Dependencies
-        async private Task downloadDepen(string filename)
+        async private Task downloadDepenAsync(string filename)
         {
             List<string> fileset = tc.GetDependencies(filename);
             fileset.Add(filename);
             foreach (string f in fileset)
             {
                 if(f.LastIndexOf("\\")!=f.Length-1)
-                await Task.Run(() => tc.downLoadFile(f));
+                    await Task.Run(() => tc.downLoadFileAsync(f));
                 else
                 await Task.Run(() => tc.downLoadFolder(f));
             }
-            string messageBoxText = "Download Completed!";
-            string caption = "Download Result";
-            MessageBoxButton button = MessageBoxButton.OK;
-            MessageBoxImage icon = MessageBoxImage.Information;
-            System.Windows.MessageBox.Show(messageBoxText, caption, button, icon);
-            RefreshTabs();
+            
         }
-        async private Task downloadFiles(string filename)
+        async private Task downloadFileAsync(string filename)
         {
 
-            await Task.Run(() => tc.downLoadFile(filename));            
-            string messageBoxText = "Download Completed!";
-            string caption = "Download Result";
-            MessageBoxButton button = MessageBoxButton.OK;
-            MessageBoxImage icon = MessageBoxImage.Information;
-            System.Windows.MessageBox.Show(messageBoxText, caption, button, icon);
-            RefreshTabs();
+            await Task.Run(() => tc.downLoadFileAsync(filename));            
+            
             
         }
 
@@ -211,7 +215,7 @@ namespace DownloadWPF
            }
        }
 
-        async private Task SyncFolder()
+        async private Task SyncFolderAsync()
         {
             List<string> AddItem = new List<string>();
             List<string> DeleteItem = new List<string>();
@@ -220,7 +224,7 @@ namespace DownloadWPF
             
             foreach (string f in AddItem)
             {
-                await Task.Run(() => tc.downLoadFile(f));
+                await Task.Run(() => tc.downLoadFileAsync(f));
             }
             string messageBoxText = "Sync Completed!";
             string caption = "Sync Result";
@@ -233,7 +237,7 @@ namespace DownloadWPF
         //Sync Folder
         private void SyncDir(object sender, RoutedEventArgs e)
         {
-            Task task = SyncFolder();
+            Task task = SyncFolderAsync();
         }
 
         ///Pop up download Menu

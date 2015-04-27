@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.Mvc;
 using System.Xml.Linq;
 
 namespace FileRepository.Controllers
@@ -17,38 +18,37 @@ namespace FileRepository.Controllers
     {
         //----< GET api/File - get list of available files >---------------
 
-        public IEnumerable<string> Get()
+        public string Get()
         {
             // available files
             string path = System.Web.HttpContext.Current.Server.MapPath("~/Uploads/");
-            string[] files = Directory.GetFiles(path);
-            for (int i = 0; i < files.Length; ++i)
-                files[i] = Path.GetFileName(files[i]);
-            return files;
+            
+            return path;
+
         }
 
-        public IEnumerable<string> Get(string fullpath,bool ford)
-        {
-            // available Dir
+        //public IEnumerable<string> Get(string fullpath,bool ford)
+        //{
+        //    // available Dir
             
-               string path = System.Web.HttpContext.Current.Server.MapPath(fullpath);
-               if (!ford)
-               {
-                   string[] directories = Directory.GetDirectories(path);
-                   for (int i = 0; i < directories.Length; ++i)
-                       directories[i] = directories[i].Substring(directories[i].LastIndexOf("\\") + 1);
-                   return directories;
-               }
-               else
-               {
-                   string[] files = Directory.GetFiles(path);
-                   for (int i = 0; i < files.Length; ++i)
-                       files[i] = Path.GetFileName(files[i]);
-                   return files;
-               }
+        //       string path = System.Web.HttpContext.Current.Server.MapPath(fullpath);
+        //       if (!ford)
+        //       {
+        //           string[] directories = Directory.GetDirectories(path);
+        //           for (int i = 0; i < directories.Length; ++i)
+        //               directories[i] = directories[i].Substring(directories[i].LastIndexOf("\\") + 1);
+        //           return directories;
+        //       }
+        //       else
+        //       {
+        //           string[] files = Directory.GetFiles(path);
+        //           for (int i = 0; i < files.Length; ++i)
+        //               files[i] = Path.GetFileName(files[i]);
+        //           return files;
+        //       }
             
             
-        }
+        //}
 
         //----< attempt to Get File Dependencies >-------------------------
         public IEnumerable<string> Get(string Fullpath)
@@ -122,6 +122,7 @@ namespace FileRepository.Controllers
             }
             else
             {
+                //sessionId = session.incrSessionId();
                 sessionId = cookie["session-id"].Value;
             }
             try
@@ -165,7 +166,7 @@ namespace FileRepository.Controllers
 
         //----< GET api/File?blockSize=2048 - get a block of bytes >-------
 
-        public HttpResponseMessage Get(int blockSize)
+        public async Task<HttpResponseMessage> Get(int blockSize)
         {
             // get FileStream and read block
 
@@ -191,7 +192,7 @@ namespace FileRepository.Controllers
         }
 
         // POST api/file
-       async public Task<HttpResponseMessage> Post(int blockSize)
+        public HttpResponseMessage Post(int blockSize)
         {
             Task<byte[]> task = Request.Content.ReadAsByteArrayAsync();
             byte[] Block = task.Result;

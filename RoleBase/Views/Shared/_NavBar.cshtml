@@ -19,7 +19,7 @@
                 {
                     <li>@Html.ActionLink("Roles Admin", "Index", "RolesAdmin")</li>
                     <li>@Html.ActionLink("Users Admin", "Index", "UsersAdmin")</li>
-                    <li>@Html.ActionLink("Repository Amin", "Index", "Admins")</li>
+                    <li>@Html.ActionLink("Repository Admin", "Index", "Admins")</li>
                 }
                 @if (Request.IsAuthenticated && User.IsInRole("Developer"))
                 {
