@@ -7,66 +7,78 @@
         <TabControl Name="tabs" HorizontalAlignment="Left" Height="460" Margin="0,10,-0.4,0" VerticalAlignment="Top" Width="750" Grid.ColumnSpan="4" FontFamily="Tahoma" FontWeight="Bold" FontSize="12" >
             <TabItem Header="Client File Browser" >
                 <Grid Background="White">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="151*"/>
+                        <ColumnDefinition Width="64*"/>
+                        <ColumnDefinition Width="529*"/>
+                    </Grid.ColumnDefinitions>
                     <TreeView x:Name="ClientdirectoryTreeView" Width="180" Height="387" Margin="12,12,0,0" 
-          VerticalAlignment="Top" HorizontalAlignment="Left" >
+          VerticalAlignment="Top" HorizontalAlignment="Left" Grid.ColumnSpan="2" >
                         <TreeView.Resources>
-                            
+
                             <HierarchicalDataTemplate DataType="{x:Type local:DirRecord}"
                                   ItemsSource="{Binding Directories}" >
                                 <StackPanel Orientation="Horizontal">
-                                    <Image Source="E:\Academic\IP\My projects\FileRepo\FileRepo\RoleBase\Scripts\themes\icons\folder.png"  Width="16" Height="16"/>
+                                    <Image Source="/DownloadWPF;component/Images/folder.png" Width="16" Height="16"/>
                                     <TextBlock Text="{Binding Info.Name}"/>
                                 </StackPanel>
                             </HierarchicalDataTemplate>
                         </TreeView.Resources>
                     </TreeView>
 
-                    <DataGrid x:Name="ClientfileInfo" Width="550" Height="387" Margin="197,12,0,0"
+                    <DataGrid x:Name="ClientfileInfo" Width="550" Height="387" Margin="46,12,-3,0"
           VerticalAlignment="Top" HorizontalAlignment="Left"
           GridLinesVisibility="Vertical" VerticalGridLinesBrush="Gray"
-          ItemsSource="{Binding ElementName=ClientdirectoryTreeView, Path=SelectedItem.Files}" >
+          ItemsSource="{Binding ElementName=ClientdirectoryTreeView, Path=SelectedItem.Files}" Grid.Column="1" Grid.ColumnSpan="2" >
                         <DataGrid.Resources>
-                           
+
                         </DataGrid.Resources>
                     </DataGrid>
                 </Grid>
             </TabItem>
-            
+
             <TabItem Header="Sever File Browser" >
                 <Grid Background="White">
-                    <TreeView x:Name="directoryTreeView" Width="180" Height="387" Margin="12,12,0,0" 
+                    <TreeView x:Name="directoryTreeView" Width="722" Height="387" Margin="12,12,0,0" 
           VerticalAlignment="Top" HorizontalAlignment="Left" MouseRightButtonDown="ShowSyncMenu">
                         <TreeView.Resources>
-                            <ContextMenu x:Key="SyncMenu">
-                                <MenuItem Header="Sync this folder..." Click="SyncDir"/>
+                            
+                            <HierarchicalDataTemplate DataType="{x:Type local:Folders}" ItemsSource="{Binding Children}">
 
-                            </ContextMenu>
-                            <HierarchicalDataTemplate DataType="{x:Type local:DirRecord}"
-                                  ItemsSource="{Binding Directories}" >
-                                <StackPanel Orientation="Horizontal">
-                                    <Image Source="E:\Academic\IP\My projects\FileRepo\FileRepo\RoleBase\Scripts\themes\icons\folder.png"  Width="16" Height="16"/>
-                                    <TextBlock Text="{Binding Info.Name}"/>
+                                <StackPanel Orientation="Horizontal" Name="directorytreestackpanel">
+                                    <StackPanel.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="Sync this folder..." Click="SyncDir"/>
+                                        </ContextMenu>
+                                    </StackPanel.ContextMenu>
+                                    <Image Source="/DownloadWPF;component/Images/folder.png" Margin="0,0,5,0" />
+                                    <TextBlock Text="{Binding Name}" />
+                                    <StackPanel.Resources>
+                                   
+                                    </StackPanel.Resources>
                                 </StackPanel>
                             </HierarchicalDataTemplate>
+                            <DataTemplate DataType="{x:Type local:Files}">
+                                <StackPanel Orientation="Horizontal">
+                                    <StackPanel.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="Download..." Click="Download"/>
+                                            <MenuItem Header="Download with dependencies..." Click="DownloadWithDepen"/>
+                                        </ContextMenu>
+                                    </StackPanel.ContextMenu>
+                                    <Image Source="/DownloadWPF;component/Images/file.png" Margin="0,0,5,0" />
+                                    <TextBlock Text="{Binding Name}" />
+                                    <TextBlock Text=" (" Foreground="Green" />
+                                    <TextBlock Text="{Binding Length}" Foreground="Green" />
+                                    <TextBlock Text=")" Foreground="Green" />
+                                </StackPanel>
+                            </DataTemplate>
                         </TreeView.Resources>
                     </TreeView>
-
-                    <DataGrid x:Name="fileInfo" Width="550" Height="387" Margin="197,12,0,0"
-          VerticalAlignment="Top" HorizontalAlignment="Left"
-          GridLinesVisibility="Vertical" VerticalGridLinesBrush="Gray"
-          ItemsSource="{Binding ElementName=directoryTreeView, Path=SelectedItem.Files}" MouseRightButtonDown="ShowMenu">
-                        <DataGrid.Resources>
-                            <ContextMenu x:Key="downloadMenu">
-                                <MenuItem Header="Download..." Click="Download"/>
-                                <MenuItem Header="Download with Dependencies" Click="DownloadWithDepen"/>
-                                
-                            </ContextMenu>
-                        </DataGrid.Resources>
-                    </DataGrid>
                 </Grid>
             </TabItem>
-            
-            
+
+
         </TabControl>
     </Grid>
 </Window>

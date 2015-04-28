@@ -58,8 +58,8 @@ namespace Client
         HttpResponseMessage response1 = task.Result;
         response = task.Result;
         status = response.ReasonPhrase;
-        string path=Newtonsoft.Json.JsonConvert.DeserializeObject<string>(response1.Content.ReadAsStringAsync().Result);
-        return path;
+        string json=Newtonsoft.Json.JsonConvert.DeserializeObject<string>(response1.Content.ReadAsStringAsync().Result);
+        return json;
     }
     //----< open file on server for reading >------------------------------
     

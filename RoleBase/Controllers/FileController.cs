@@ -9,21 +9,38 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Mvc;
 using System.Xml.Linq;
-
+using FileRepository.Models;
 namespace FileRepository.Controllers
 {
    
         // GET api/<controller>
          public class FileController : ApiController
     {
+
+             private void searchServerFiles(ref ServerFolders cur,  DirectoryInfo curdir)
+             {
+                 foreach (DirectoryInfo dir in curdir.GetDirectories())
+                 {
+                     ServerFolders child=new ServerFolders{Name=dir.Name,FullName=dir.FullName};
+                     searchServerFiles(ref child, dir);
+                     cur.folder.Add(child);
+                 }
+                 foreach (FileInfo f in curdir.GetFiles())
+                 {
+                     ServerFiles child = new ServerFiles { Name = f.Name, Length = (f.Length/1024).ToString()+"KB", LastTime = f.LastWriteTime.ToString(),FullName=f.FullName };
+                     cur.file.Add(child);
+                 }
+             }
         //----< GET api/File - get list of available files >---------------
 
         public string Get()
         {
             // available files
             string path = System.Web.HttpContext.Current.Server.MapPath("~/Uploads/");
-            
-            return path;
+            ServerFolders root = new ServerFolders { Name = "Uploads" };
+            searchServerFiles(ref root, new DirectoryInfo(path));
+            dynamic json = Newtonsoft.Json.JsonConvert.SerializeObject(root);
+            return json;
 
         }
 

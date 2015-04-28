@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -49,13 +50,9 @@ namespace UploadWPF
         {
             var directory = new ObservableCollection<DirRecord>();
             string path = tc.getServerFileFolder();
-            directory.Add(
-                new DirRecord
-                {
-                    Info=new DirectoryInfo(path)
-                }
-                );
-            directoryTreeView.ItemsSource = directory;
+            Folders root = Newtonsoft.Json.JsonConvert.DeserializeObject<Folders>(path);
+            
+            directoryTreeView.Items.Add(root);
         }
 
         private void SelectedFolder_Load(string path)
@@ -100,7 +97,7 @@ namespace UploadWPF
         private void Refresh()
         {
             Directory_Load();
-            fileInfo.AutoGeneratingColumn += fileInfoColumn_Load;
+            
         }
 
         private void SelectButton_Click(object sender, RoutedEventArgs e)
@@ -129,7 +126,7 @@ namespace UploadWPF
             MessageBoxImage icon = MessageBoxImage.Information;
             System.Windows.MessageBox.Show(messageBoxText, caption, button, icon);
             Directory_Load();
-            fileInfo.AutoGeneratingColumn += fileInfoColumn_Load;
+           
         }
       async private Task Upload_file()
       {

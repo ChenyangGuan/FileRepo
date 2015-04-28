@@ -41,21 +41,23 @@ namespace DownloadWPF
         }
         private void RefreshTabs(){
             Directory_Load();
-            fileInfo.AutoGeneratingColumn += fileInfoColumn_Load;
+            
             ClientfileInfo.AutoGeneratingColumn += fileInfoColumn_Load;
         }
         private void Directory_Load()
         {
             var directory = new ObservableCollection<DirRecord>();
             string path = tc.getServerFileFolder();
+            Folders root = Newtonsoft.Json.JsonConvert.DeserializeObject<Folders>(path);
             
-            directory.Add(
-                new DirRecord
-                {
-                    Info=new DirectoryInfo(path)
-                }
-                );
-            directoryTreeView.ItemsSource = directory;
+            //directory.Add(
+            //    new DirRecord
+            //    {
+            //        Info=new DirectoryInfo(path)
+            //    }
+            //    );
+            //directoryTreeView.ItemsSource = directory;
+            directoryTreeView.Items.Add(root);
             var Clientdirectory = new ObservableCollection<DirRecord>();
 
             Clientdirectory.Add(
@@ -241,17 +243,17 @@ namespace DownloadWPF
         }
 
         ///Pop up download Menu
-        private void ShowMenu(object sender, RoutedEventArgs e)
-        {
-            object temp;           
-            temp=fileInfo.SelectedItem;
-            if (temp == null) return;          
-            var tmp = temp as FileInfo;
-            Filename = tmp.FullName;
-            System.Windows.Controls.ContextMenu menu = fileInfo.FindResource("downloadMenu") as System.Windows.Controls.ContextMenu;
-            menu.PlacementTarget = sender as System.Windows.Controls.Button;
-            menu.IsOpen = true;
-        }
+        //private void ShowMenu(object sender, RoutedEventArgs e)
+        //{
+        //    object temp;
+        //    temp = directoryTreeView.SelectedItem;
+        //    if (temp == null) return;          
+        //    var tmp = temp as FileInfo;
+        //    Filename = tmp.FullName;
+        //    System.Windows.Controls.ContextMenu menu = directoryTreeView.FindResource("downloadMenu") as System.Windows.Controls.ContextMenu;
+        //    menu.PlacementTarget = sender as System.Windows.Controls.Button;
+        //    menu.IsOpen = true;
+        //}
 
 
         //Pop up Sync Menu
@@ -260,11 +262,24 @@ namespace DownloadWPF
             object temp;
             temp = directoryTreeView.SelectedItem;
             if (temp == null) return;
-            var tmp = temp as DirRecord;
-            foldername = tmp.Info.FullName;
-            System.Windows.Controls.ContextMenu menu = directoryTreeView.FindResource("SyncMenu") as System.Windows.Controls.ContextMenu;
-            menu.PlacementTarget = sender as System.Windows.Controls.Button;
-            menu.IsOpen = true;
+           
+                var tmp = temp as Folders;
+                if (tmp != null)
+                    foldername = tmp.FullName;
+                else
+                {
+                    var tmp1 = temp as Files;
+                    Filename = tmp1.FullName;
+                }
+            FrameworkElement element = sender as FrameworkElement;
+            if (element.ContextMenu != null)
+            {
+                element.ContextMenu.PlacementTarget = element;
+                element.ContextMenu.IsOpen = true;
+            }
+            //System.Windows.Controls.ContextMenu menu = directoryTreeView.FindResource("SyncMenu") as System.Windows.Controls.ContextMenu; 
+            //menu.PlacementTarget = sender as System.Windows.Controls.Button;
+            //menu.IsOpen = true;
         }
             
         

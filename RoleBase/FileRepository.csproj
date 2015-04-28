@@ -570,6 +570,7 @@
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AdminViewModel.cs" />
+    <Compile Include="Models\FileFolder.cs" />
     <Compile Include="Models\Fileinfos.cs" />
     <Compile Include="Models\Fileset.cs" />
     <Compile Include="Models\IdentityModels.cs" />

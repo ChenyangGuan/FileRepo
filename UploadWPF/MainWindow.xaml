@@ -13,23 +13,32 @@
         <TabControl Name="tabs" HorizontalAlignment="Left" Height="460" Margin="0,10,-0.4,0" VerticalAlignment="Top" Width="594" Grid.ColumnSpan="4" FontFamily="Tahoma" FontWeight="Bold" FontSize="12" >
             <TabItem Header="Sever File Browser" >
                 <Grid Background="White">
-                    <TreeView x:Name="directoryTreeView" Width="122" Height="387" Margin="12,12,0,0" 
+                    <TreeView x:Name="directoryTreeView" Width="566" Height="387" Margin="12,12,0,0" 
           VerticalAlignment="Top" HorizontalAlignment="Left">
                         <TreeView.Resources>
-                            <HierarchicalDataTemplate DataType="{x:Type local:DirRecord}"
-                                  ItemsSource="{Binding Directories}" >
-                                <StackPanel Orientation="Horizontal">
-                                    <Image Source="E:\Academic\IP\My projects\FileRepo\FileRepo\RoleBase\Scripts\themes\icons\folder.png"  Width="16" Height="16"/>
-                                    <TextBlock Text="{Binding Info.Name}"/>
+
+                            <HierarchicalDataTemplate DataType="{x:Type local:Folders}" ItemsSource="{Binding Children}">
+
+                                <StackPanel Orientation="Horizontal" Name="directorytreestackpanel">
+
+                                    <Image Source="/FileBrowser;component/Images/folder.png" Margin="0,0,5,0" />
+                                    <TextBlock Text="{Binding Name}" />
+                                    <StackPanel.Resources>
+
+                                    </StackPanel.Resources>
                                 </StackPanel>
                             </HierarchicalDataTemplate>
+                            <DataTemplate DataType="{x:Type local:Files}">
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="/FileBrowser;component/Images/file.png" Margin="0,0,5,0" />
+                                    <TextBlock Text="{Binding Name}" />
+                                    <TextBlock Text=" (" Foreground="Green" />
+                                    <TextBlock Text="{Binding Length}" Foreground="Green" />
+                                    <TextBlock Text=")" Foreground="Green" />
+                                </StackPanel>
+                            </DataTemplate>
                         </TreeView.Resources>
                     </TreeView>
-
-                    <DataGrid x:Name="fileInfo" Width="439" Height="387" Margin="139,10,0,0"
-          VerticalAlignment="Top" HorizontalAlignment="Left"
-          GridLinesVisibility="Vertical" VerticalGridLinesBrush="Gray"
-          ItemsSource="{Binding ElementName=directoryTreeView, Path=SelectedItem.Files}"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Choose Folder" Name="ChooseFolderTab">
