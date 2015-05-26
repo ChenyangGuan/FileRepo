@@ -15,7 +15,7 @@
             <tr>
                 <td><input type="file" name="files" id="files" multiple /></td>
                 <td><input type="submit" name="upload" value="Upload" id="upload" /></td>
-                <td><input type="hidden" name="path" id="UploadPath" value="test"></td>
+                <td><input type="hidden" name="path" id="UploadPath" value=""></td>
             </tr>
 
         </table>
@@ -34,10 +34,11 @@
         <div style="margin-bottom:2px">
             Folder Name:
             <input class="easyui-textbox" id="FolderN" style="width:50%;height:25px;margin-left:5px">
+            <a href="#" class="easyui-linkbutton"  data-options="iconCls:'icon-ok'" onclick="CreateConfirm()">Create</a>
         </div>
-        <div>
-            <a href="#" class="easyui-linkbutton" style="margin-left:70%" data-options="iconCls:'icon-ok'" onclick="CreateConfirm()">Create</a>
-        </div>
+        
+            
+        
     </div>
     <script>
         function Upload() {
@@ -52,6 +53,7 @@
             
             $('#uploadwindow').window('open');
         }
+
         (function () {
             var bar = $('.progress-bar');
             var percent = $('.progress-bar');
@@ -89,7 +91,7 @@
                     status.html("<p style='color:red '>" + xhr.responseText + "</p>");
                     $.messager.show({
                         title: 'Error',
-                        msg: 'mess',
+                        msg: 'Error',
                         timeout: 5000,
                         showType: 'slide'
                     });

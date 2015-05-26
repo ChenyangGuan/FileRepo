@@ -36,7 +36,7 @@ namespace UploadWPF
         public MainWindow()
         {
             InitializeComponent();
-           // string url = "http://localhost:55664/api/File";
+            //string url = "http://localhost:55664/api/File";
             string url = "http://localhost/api/File";
             tc = new Client.TestClient(url);
             Foldername = "";
@@ -96,6 +96,7 @@ namespace UploadWPF
 
         private void Refresh()
         {
+            directoryTreeView.Items.Clear();
             Directory_Load();
             
         }
@@ -125,7 +126,7 @@ namespace UploadWPF
             MessageBoxButton button = MessageBoxButton.OK;
             MessageBoxImage icon = MessageBoxImage.Information;
             System.Windows.MessageBox.Show(messageBoxText, caption, button, icon);
-            Directory_Load();
+            Refresh();
            
         }
       async private Task Upload_file()
@@ -199,6 +200,61 @@ namespace UploadWPF
             this.tabs.Items.Remove(RenameTab);
             ChooseFolderTab.IsEnabled = true;
             Task task = Upload_Folder();
+        }
+
+        private void ViewServerFile(object sender, RoutedEventArgs e)
+        {
+            FileBrowser.Details filedetail;
+            if (Filename.IndexOf(".jpg") != -1 || Filename.IndexOf(".png") != -1)
+            {
+                filedetail = new FileBrowser.Details(Filename);
+            }
+            else
+            {
+                string FileText = tc.getServerFileText(Filename);
+                Files f = directoryTreeView.SelectedItem as Files;
+                filedetail = new FileBrowser.Details(f.Name, FileText);
+            }
+            filedetail.Show();
+        }
+        private void ViewClientFile(object sender, RoutedEventArgs e)
+        {
+
+            FileInfo f = SelectedFolderFileInfo.SelectedItem as FileInfo;
+            FileBrowser.Details filedetail;
+            if (f.Name.IndexOf(".jpg") != -1 || f.Name.IndexOf(".png") != -1)
+            {
+                filedetail = new FileBrowser.Details(f.FullName);
+            }
+            else
+            {
+                string text = System.IO.File.ReadAllText(@f.FullName);
+               filedetail = new FileBrowser.Details(SelectedFolderFileInfo.SelectedItem.ToString(), text);
+            }
+            filedetail.Show();
+        }
+         //Pop up Menu
+        private void ShowServerMenu(object sender, RoutedEventArgs e)
+        {
+            object temp;
+            temp = directoryTreeView.SelectedItem;
+            if (temp == null) return;
+
+            var tmp = temp as Files;
+            if (tmp == null) return;
+             Filename = tmp.FullName;
+            
+            FrameworkElement element = sender as FrameworkElement;
+            if (element.ContextMenu != null)
+            {
+                element.ContextMenu.PlacementTarget = element;
+                element.ContextMenu.IsOpen = true;
+            }
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Refresh();
         }
         // private void Confirm_Click(object sender, RoutedEventArgs e)
         //{

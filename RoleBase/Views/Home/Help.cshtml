@@ -5,49 +5,133 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 @Scripts.Render("~/bundles/jquery")
+<script src="~/Scripts/jssor.js"></script>
+<script src="~/Scripts/jssor.slider.js"></script>
 <h2 class="header-custom"><span class="glyphicon glyphicon-question-sign"></span> Help</h2>
-<div class="row">
-    <div class="col-md-8">
-        <h3 class="header-custom">About File Repository</h3>
-        <p class="text-custom">
-            This website supports the storage, retrieval, and viewing of source code
-            files. A user will be able to upload a file or folder, view any of the files in a folder, specify dependency information,
-            and retrieve a selected file and all its dependencies, all from a browser. The web service supports synchronizing the
-            contents of a server folder with a specified folder on the client machine.
-        </p>
-        <p class="text-custom">
-            It supports:
-        </p>
-        <ul class="text-custom">
-            <li>Uploading a specified client file to a selected folder on the server.</li>
-            <li>
-                Creating new folders on the server.
-            </li>
-            <li>
-                Specifying persistent dependency relationships between files selected by name and date.
-            </li>
-            <li>
-                Viewing a selected file’s text.
-            </li>
-            <li>
-                Downloading a selected file and optionally all its dependencies.
-            </li>
-        </ul>
-    </div>
-    <div class="col-md-4">
-        <h3 class="header-custom">About the Roles</h3>
-        <p class="text-custom">In this websites, there are 3 roles:</p>
-        <ul class="text-custom">
-            <li>
-                <strong>Normal Users:</strong> Just view and download the files in the server.
-            </li>
-            <li>
-                <strong>Developers:</strong> Upload files; Create directories and specify files dependencies.
-            </li>
-            <li>
-                <strong>Administrator:</strong> Manage Roles; Rename Directories'; Delete files.
-            </li>
-        </ul>
+<div id="slider1_container" style="position: relative; top: 0px; left: 0px; width: 1400px;
+        height: 550px; ">
 
+    <!-- Slides Container -->
+    <div u="slides" style="cursor: move; position: absolute; left: 1%; top: 0px; width: 1400px; height: 550px;
+            overflow: hidden;">
+        <div><img u="image" src="~/Content/Images/1.png" /></div>
+        <div><img u="image" src="~/Content/Images/2.png" /></div>
+        <div><img u="image" src="~/Content/Images/3.png" /></div>
+        <div><img u="image" src="~/Content/Images/4.png" /></div>
+        <div><img u="image" src="~/Content/Images/5.png" /></div>
     </div>
-</div>
+    <style>
+        /* jssor slider arrow navigator skin 03 css */
+        /*
+                .jssora03l                  (normal)
+                .jssora03r                  (normal)
+                .jssora03l:hover            (normal mouseover)
+                .jssora03r:hover            (normal mouseover)
+                .jssora03l.jssora03ldn      (mousedown)
+                .jssora03r.jssora03rdn      (mousedown)
+                */
+        .jssora03l, .jssora03r {
+            display: block;
+            position: absolute;
+            /* size of arrow element */
+            width: 55px;
+            height: 55px;
+            cursor: pointer;
+            background: url(../../Content/Images/a03.png) no-repeat;
+            overflow: hidden;
+        }
+
+        .jssora03l {
+            background-position: -3px -33px;
+        }
+
+        .jssora03r {
+            background-position: -63px -33px;
+        }
+
+        .jssora03l:hover {
+            background-position: -123px -33px;
+        }
+
+        .jssora03r:hover {
+            background-position: -183px -33px;
+        }
+
+        .jssora03l.jssora03ldn {
+            background-position: -243px -33px;
+        }
+
+        .jssora03r.jssora03rdn {
+            background-position: -303px -33px;
+        }
+    </style>
+
+    <span u="arrowleft" class="jssora03l" style="top: 323px; left: 1%;">
+    </span>
+    <!-- Arrow Right -->
+    <span u="arrowright" class="jssora03r" style="top: 323px; right: -1%;">
+    </span>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <h2 class="header-custom">About File Repository</h2>
+            <p class="text-custom">
+                This website supports the storage, retrieval, and viewing of source code
+                files. A user will be able to upload a file or folder, view any of the files in a folder, specify dependency information,
+                and retrieve a selected file and all its dependencies, all from a browser. The web service supports synchronizing the
+                contents of a server folder with a specified folder on the client machine.
+            </p>
+            <p class="text-custom">
+                It supports:
+            </p>
+            <ul class="text-custom">
+                <li>Uploading a specified client file to a selected folder on the server.</li>
+                <li>
+                    Creating new folders on the server.
+                </li>
+                <li>
+                    Specifying persistent dependency relationships between files selected by name and date.
+                </li>
+                <li>
+                    Viewing a selected file’s text.
+                </li>
+                <li>
+                    Downloading a selected file and optionally all its dependencies.
+                </li>
+            </ul>
+        </div>
+        <div class="col-md-4">
+            <h3 class="header-custom">About the Roles</h3>
+            <p class="text-custom">In this websites, there are 3 roles:</p>
+            <ul class="text-custom">
+                <li>
+                    <strong>Normal Users:</strong> Just view and download the files in the server.
+                </li>
+                <li>
+                    <strong>Developers:</strong> Upload files; Create directories and specify files dependencies.
+                </li>
+                <li>
+                    <strong>Administrator:</strong> Manage Roles; Rename Directories'; Delete files.
+                </li>
+            </ul>
+
+        </div>
+    </div>
+
+    <script>
+        jQuery(document).ready(function ($) {
+            var options = {
+                $AutoPlay: true,
+                $DragOrientation: 0,                                //[Optional] Orientation to drag slide, 0 no drag, 1 horizental, 2 vertical, 3 either, default value is 1 (Note that the $DragOrientation should be the same as $PlayOrientation when $DisplayPieces is greater than 1, or parking position is not 0)
+                $ArrowNavigatorOptions: {                       //[Optional] Options to specify and enable arrow navigator or not
+                    $Class: $JssorArrowNavigator$,              //[Requried] Class to create arrow navigator instance
+                    $ChanceToShow: 2,                               //[Required] 0 Never, 1 Mouse Over, 2 Always
+                    $AutoCenter: 0,                                 //[Optional] Auto center arrows in parent container, 0 No, 1 Horizontal, 2 Vertical, 3 Both, default value is 0
+                    $Steps: 1                                       //[Optional] Steps to go for each navigation request, default value is 1
+                }
+            };
+
+            var jssor_slider1 = new $JssorSlider$("slider1_container", options);
+        });
+    </script>

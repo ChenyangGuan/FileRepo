@@ -1,5 +1,6 @@
-﻿<nav class="navbar navbar-custom navbar-fixed-top">
-    <div class="container">
+﻿@*HTML5 Nav*@
+<nav class="navbar navbar-custom navbar-fixed-top">
+    <div class="container container-custom">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                 <span class="icon-bar"></span>
@@ -29,9 +30,12 @@
                 {
                     <li>@Html.ActionLink("Repository Display", "Index", "NormalUsers")</li>
                 }
+                
             </ul>
             @Html.Partial("_LoginPartial")
         </div>
+       
     </div>
+   
 </nav>
 

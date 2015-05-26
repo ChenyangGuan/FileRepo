@@ -132,15 +132,16 @@ namespace FileRepository.Controllers
             {
                 var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
 
-                // Add the Address properties:
+                
                 user.nickname = model.nickname;
                 
                 var result = await UserManager.CreateAsync(user, model.Password);
-                var result2= await UserManager.AddToRolesAsync(user.Id, "NormalUser");
-                if (result.Succeeded&&result2.Succeeded)
+                if (result.Succeeded)
                 {
-                    return View("~/Views/Message/RegisterSuccess.cshtml");
+                    var result2 = await UserManager.AddToRolesAsync(user.Id, "NormalUser");
+                    if (result2.Succeeded) return View("~/Views/Message/RegisterSuccess.cshtml");
                 }
+               
                 //if (result.Succeeded)
                 //{
                 //    var code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
@@ -153,7 +154,7 @@ namespace FileRepository.Controllers
                 //    ViewBag.Link = callbackUrl;
                 //    return View("DisplayEmail");
                 //}
-                //AddErrors(result);
+                AddErrors(result);
             }
 
             // If we got this far, something failed, redisplay form

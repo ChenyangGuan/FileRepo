@@ -106,7 +106,7 @@ namespace FileRepository.Controllers
                     foreach (var defile in denpendentFiles)
                     {
                         string oldpath = defile.Value.Remove(0, 2);
-                        oldpath = "../../" + oldpath;
+                        oldpath = "~\\" + oldpath;
                         string dirpath = depenency.FullName;
                         string newpath = dirpath + "\\" + defile.Value.Substring(defile.Value.LastIndexOf("\\") + 1);
                         System.IO.File.Copy(System.Web.HttpContext.Current.Server.MapPath(oldpath), newpath, true);
@@ -155,10 +155,10 @@ namespace FileRepository.Controllers
                 else if (open == "upload")
                 {
 
-                    string dirname = fileName.Substring(0, fileName.LastIndexOf("\\"));                   
+                    string dirname = System.Web.Hosting.HostingEnvironment.MapPath("~/Uploads/") + fileName.Substring(0, fileName.LastIndexOf("\\"));                   
                     DirectoryInfo dir = new DirectoryInfo(dirname);
                     if(dir.Exists==false) Directory.CreateDirectory(dirname);
-                    
+                    fileName = dirname + fileName.Substring(fileName.LastIndexOf("\\"));
                     fs = new FileStream(fileName, FileMode.OpenOrCreate);
                     session.saveStream(fs, sessionId);
                 }

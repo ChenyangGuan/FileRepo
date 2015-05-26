@@ -31,7 +31,7 @@ namespace DownloadWPF
         public MainWindow()
         {
             InitializeComponent();
-            //string url = "http://localhost:55664/api/File";
+           // string url = "http://localhost:55664/api/File";
             string url = "http://localhost/api/File";
             tc = new Client.TestClient(url);
             foldername = "";
@@ -40,6 +40,7 @@ namespace DownloadWPF
             RefreshTabs();
         }
         private void RefreshTabs(){
+            directoryTreeView.Items.Clear();
             Directory_Load();
             
             ClientfileInfo.AutoGeneratingColumn += fileInfoColumn_Load;
@@ -87,7 +88,53 @@ namespace DownloadWPF
             }
         }
 
+        private void CheckDependency(object sender, RoutedEventArgs e)
+        {
+            List<string> Directory=tc.GetDependencies(Filename);
+            List<string> files = new List<string>();
+            foreach (string dir in Directory)
+            {
+                DirectoryInfo d = new DirectoryInfo(dir);
+                foreach (FileInfo f in d.GetFiles())
+                {
+                    files.Add(f.FullName);
+                }
+            }
+            Dependency DepenWindow = new Dependency(ref files);
+            DepenWindow.Show();
+        }
 
+        private void ViewClientFile(object sender, RoutedEventArgs e)
+        {
+            Details filedetail;
+            FileInfo f = ClientfileInfo.SelectedItem as FileInfo;
+            if (f.Name.IndexOf(".jpg") != -1 || f.Name.IndexOf(".png") != -1)
+            {
+                filedetail = new Details(f.FullName);
+            }
+            else
+            {
+                string text = System.IO.File.ReadAllText(@f.FullName);
+                filedetail = new Details(ClientfileInfo.SelectedItem.ToString(), text);
+            }
+            filedetail.Show();
+        }
+
+        private void ViewServerFile(object sender, RoutedEventArgs e)
+        {
+            Details filedetail;
+            if (Filename.IndexOf(".jpg") != -1 || Filename.IndexOf(".png") != -1)
+            {
+                filedetail = new Details(Filename);
+            }
+            else
+            {
+                string FileText = tc.getServerFileText(Filename);
+                Files f = directoryTreeView.SelectedItem as Files;
+                filedetail = new Details(f.Name, FileText);
+            }
+            filedetail.Show();
+        }
         private async void Download(object sender, RoutedEventArgs e)
         {
             await downloadFileAsync(Filename);
@@ -217,13 +264,28 @@ namespace DownloadWPF
            }
        }
 
+        private void DeleteEmptyDir(){
+            string clientPath = foldername.Substring(foldername.IndexOf("Uploads") + 7);
+            string DownloadPath = System.IO.Path.GetFullPath("../../DownLoad");
+            clientPath = DownloadPath + clientPath;
+            DirectoryInfo syncFolder = new DirectoryInfo(clientPath);
+            if (syncFolder.Exists)
+                foreach (DirectoryInfo d in syncFolder.GetDirectories("*", SearchOption.AllDirectories))
+                {
+                    if (d.GetFiles("*", SearchOption.AllDirectories).Count()==0)
+                    {
+                        Directory.Delete(d.FullName);
+                    }
+                }
+        }
+
         async private Task SyncFolderAsync()
         {
             List<string> AddItem = new List<string>();
             List<string> DeleteItem = new List<string>();
             CheckDiff(ref AddItem, ref DeleteItem);
             DeleteFiles(ref DeleteItem);
-            
+            DeleteEmptyDir();
             foreach (string f in AddItem)
             {
                 await Task.Run(() => tc.downLoadFileAsync(f));
@@ -280,6 +342,11 @@ namespace DownloadWPF
             //System.Windows.Controls.ContextMenu menu = directoryTreeView.FindResource("SyncMenu") as System.Windows.Controls.ContextMenu; 
             //menu.PlacementTarget = sender as System.Windows.Controls.Button;
             //menu.IsOpen = true;
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            RefreshTabs();
         }
             
         

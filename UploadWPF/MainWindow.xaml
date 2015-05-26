@@ -14,13 +14,13 @@
             <TabItem Header="Sever File Browser" >
                 <Grid Background="White">
                     <TreeView x:Name="directoryTreeView" Width="566" Height="387" Margin="12,12,0,0" 
-          VerticalAlignment="Top" HorizontalAlignment="Left">
+          VerticalAlignment="Top" HorizontalAlignment="Left" MouseRightButtonDown="ShowServerMenu">
                         <TreeView.Resources>
 
                             <HierarchicalDataTemplate DataType="{x:Type local:Folders}" ItemsSource="{Binding Children}">
 
                                 <StackPanel Orientation="Horizontal" Name="directorytreestackpanel">
-
+                                    
                                     <Image Source="/FileBrowser;component/Images/folder.png" Margin="0,0,5,0" />
                                     <TextBlock Text="{Binding Name}" />
                                     <StackPanel.Resources>
@@ -30,6 +30,12 @@
                             </HierarchicalDataTemplate>
                             <DataTemplate DataType="{x:Type local:Files}">
                                 <StackPanel Orientation="Horizontal">
+                                    <StackPanel.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="View..." Click="ViewServerFile"/>
+                                            
+                                        </ContextMenu>
+                                    </StackPanel.ContextMenu>
                                     <Image Source="/FileBrowser;component/Images/file.png" Margin="0,0,5,0" />
                                     <TextBlock Text="{Binding Name}" />
                                     <TextBlock Text=" (" Foreground="Green" />
@@ -39,6 +45,7 @@
                             </DataTemplate>
                         </TreeView.Resources>
                     </TreeView>
+                    <Button Content="Refresh" HorizontalAlignment="Left" Margin="12,404,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Choose Folder" Name="ChooseFolderTab">
@@ -73,6 +80,7 @@
           ItemsSource="{Binding ElementName=SelectedFolderTreeView, Path=SelectedItem.Files}" Grid.ColumnSpan="2" MouseRightButtonDown="ShowMenu">
                         <DataGrid.Resources>
                             <ContextMenu x:Key="uploadMenu">
+                                <MenuItem Header="View..." Click="ViewClientFile"/>
                                 <MenuItem Header="Upload..." Click="upload"/>
 
                             </ContextMenu>

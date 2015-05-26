@@ -53,8 +53,12 @@ input[type="checkbox"].input-validation-error {
     text-transform: uppercase;
     font-family: Montserrat,"Helvetica Neue",Helvetica,Arial,sans-serif;
 	/*when window width < menu bar length*/
-    background-color: #fff;
+    background-color: #E1E8E8;
 	opacity:0.8;
+}
+
+.container-custom{
+    width:1800px;
 }
 
 #bgindex {height:100%;
@@ -98,12 +102,20 @@ input[type="checkbox"].input-validation-error {
     background: none;
 }
 .panel-custom{
+     overflow: hidden;
+  text-align: left;
+  border: 0;
+  -moz-border-radius: 0 0 0 0;
+  -webkit-border-radius: 0 0 0 0;
+  border-radius: 0 0 0 0;
+    margin-top:100px;
     background:none;
 }
 .jumbotron-custom{
     background-color: rgba(225, 237, 242, 0.4);
     width: 100%;
     
+    margin-top: 50px;
 }
 .jumbotron-leftheader{
     max-width:50%;
@@ -137,5 +149,6 @@ input[type="checkbox"].input-validation-error {
 
 .text-custom{
     color:rgb(230, 227, 247);
+    font-size:16px;
 }
 

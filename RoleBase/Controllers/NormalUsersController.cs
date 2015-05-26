@@ -38,16 +38,17 @@ namespace RoleBase.Controllers
             DirectoryInfo dirinfo = new DirectoryInfo(path);
             Files dir = new Files(id, "", dirinfo.Name, Wrapfullpath(dirinfo.FullName), dirinfo.LastAccessTime.ToString());
             id = id * 10;
+            bool empty = true;
             foreach (DirectoryInfo directory in dirinfo.GetDirectories())
             {
-                
+                empty = false;
                 Files newdir = new Files(++id, "", directory.Name, Wrapfullpath(directory.FullName),directory.LastAccessTime.ToString());
                 newdir = Searchfile(directory.FullName, id);
                 if (id > 1000) dir.state = "closed";
                 dir.AddChild(newdir);
 
             }
-            bool empty = true;
+            
             foreach (FileInfo file in dirinfo.GetFiles("*.*"))
             {
                 empty = false;
@@ -88,13 +89,25 @@ namespace RoleBase.Controllers
         //GET
         //View text
         [AllowAnonymous]
-        public ActionResult viewFile(string fullpath)
+        public string viewFile(string fullpath)
         {
             fullpath = Server.MapPath(fullpath);
             try
             {
                 FileStream fs = new FileStream(fullpath, FileMode.Open, FileAccess.Read);
-                return File(fs, "application/text");
+                StreamReader rd = new StreamReader(fullpath);
+                string result="";
+                string curline;
+               while((curline = rd.ReadLine()) != null)
+                {
+                 result+=curline+"<br/>";
+   
+                 }
+
+               rd.Close();
+               return result;
+                //return Content(result, "text/xml");
+                //return File(fs, "application/text");
             }
             catch
             {

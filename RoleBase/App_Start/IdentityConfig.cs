@@ -13,6 +13,7 @@ using System.Web;
 
 namespace FileRepository.Models
 {
+
     // Configure the application user manager used in this application. UserManager is defined in ASP.NET Identity and is used by the application.
 
     public class ApplicationUserManager : UserManager<ApplicationUser>
@@ -38,7 +39,7 @@ namespace FileRepository.Models
                 RequiredLength = 6,               
                 RequireDigit = true,
                 RequireLowercase = true,
-                
+                //RequireUppercase = true,
             };
             // Configure user lockout defaults
             manager.UserLockoutEnabledByDefault = true;

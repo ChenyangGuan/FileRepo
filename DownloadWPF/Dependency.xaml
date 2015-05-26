@@ -1,0 +1,15 @@
+﻿<Window x:Class="DownloadWPF.Dependency"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Dependency" Height="400" Width="500">
+    <Grid>
+        <DataGrid Name="DependencyFile" HorizontalAlignment="Left" VerticalAlignment="Top" Height="369" Width="492" ItemsSource="{Binding Path=FileInfo}" AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="FileName" Binding="{Binding Path=Name}"/>
+                <DataGridTextColumn Header="Type" Binding="{Binding Path=Extension}"/>
+                <DataGridTextColumn Header="Size" Binding="{Binding Path=Length}"/>
+                <DataGridTextColumn Header="LastAccessTime" Binding="{Binding Path=LastAccessTime}"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Window>

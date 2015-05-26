@@ -48,7 +48,13 @@ namespace Client
     //  return files;
     //}
 
+    
 
+    public string getServerFileText(string filename)
+    {
+        StreamReader s = new StreamReader(filename);
+        return s.ReadToEnd();
+    }
     public string getServerFileFolder()
     {
         message = new HttpRequestMessage();
@@ -251,7 +257,12 @@ async public Task upLoadFolder(string foldername, string newname, string path)
 {
     DirectoryInfo dir = new DirectoryInfo(foldername);
     string filepath=path;
-    if (newname != "") filepath = newname+"\\";
+    if (newname != "") filepath += newname+"\\";
+    else
+    {
+        string tmp = foldername.Substring(foldername.LastIndexOf("\\") + 1);
+        filepath += tmp+"\\";
+    }
     foreach(FileInfo f in dir.GetFiles())
     {
         await upLoadFile(f.FullName, filepath);
@@ -277,13 +288,13 @@ async public Task upLoadFolder(string foldername, string newname, string path)
 
       Console.Write("\n  Sending get request to open file");
       Console.Write("\n ----------------------------------");
-      string serveruploadfolder = getServerFileFolder();
-      string FilenameOnServer = Path.GetFullPath(serveruploadfolder)+path+filename.Substring(filename.LastIndexOf("\\")+1);
+      
+      string FilenameOnServer = path+filename.Substring(filename.LastIndexOf("\\")+1);
       openServerUpLoadFile(FilenameOnServer);
       Console.Write("\n  Response status = {0}\n", status);
       
       FileStream up = openClientUpLoadFile(filename);
-
+      if (up == null) return;
       Console.Write("\n  Sending Post requests to send blocks:");
       Console.Write("\n ---------------------------------------");
 

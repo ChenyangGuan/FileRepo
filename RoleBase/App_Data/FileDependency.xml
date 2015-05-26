@@ -1,34 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <FileDependency>
   <File>
-    <FileName>Uploads\cguan02@syr.edu\butterfly.jpg</FileName>
-    <FullPath>~\Uploads\cguan02@syr.edu\butterfly.jpg</FullPath>
+    <FileName>Uploads\TestFolder\message.cpp</FileName>
+    <FullPath>~\Uploads\TestFolder\message.cpp</FullPath>
     <Dependencies>
-      <FileFullPath>~\Uploads\cguan02@syr.edu\desert.jpg</FileFullPath>
-      <FileFullPath>~\Uploads\lalal\city.jpg</FileFullPath>
+      <FileFullPath>~\Uploads\TestFolder\message.h</FileFullPath>
     </Dependencies>
   </File>
   <File>
-    <FileName>Uploads\cguan02@syr.edu\sunset.jpg</FileName>
-    <FullPath>~\Uploads\cguan02@syr.edu\sunset.jpg</FullPath>
-    <Dependencies />
-  </File>
-  <File>
-    <FileName>Uploads\cguan02@syr.edu\city.jpg</FileName>
-    <FullPath>~\Uploads\cguan02@syr.edu\city.jpg</FullPath>
-    <Dependencies />
-  </File>
-  <File>
-    <FileName>Uploads\cguan02@syr.edu\flower.jpg</FileName>
-    <FullPath>~\Uploads\cguan02@syr.edu\flower.jpg</FullPath>
-    <Dependencies />
-  </File>
-  <File>
-    <FileName>Uploads\lalal\city.jpg</FileName>
-    <FullPath>~\Uploads\lalal\city.jpg</FullPath>
+    <FileName>Uploads\cguan02@syr.edu\HomeController.cs</FileName>
+    <FullPath>~\Uploads\cguan02@syr.edu\HomeController.cs</FullPath>
     <Dependencies>
-      <FileFullPath>~\Uploads\lalal\888\989.txt</FileFullPath>
-      <FileFullPath>~\Uploads\mama\password.jpg</FileFullPath>
+      <FileFullPath>~\Uploads\TestFolder\message.cpp</FileFullPath>
     </Dependencies>
   </File>
 </FileDependency>

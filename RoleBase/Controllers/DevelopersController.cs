@@ -21,7 +21,14 @@ namespace RoleBase.Controllers
             return View();
         }
 
-
+        //Change the absolute full path to relative path
+        private string Wrapfullpath(string fullpath)
+        {
+            int homeindex = fullpath.IndexOf("Uploads");
+            string relative = fullpath.Substring(homeindex, fullpath.Length - homeindex);
+            relative = "~\\" + relative;
+            return relative;
+        }
         //Get Current User Name
         private string GetUser()
         {
@@ -57,7 +64,7 @@ namespace RoleBase.Controllers
                     }
                   
                 }
-                return "Successful. Upload your files to "+folderpath;
+                return "Successful. Upload your files to " + Wrapfullpath(folderpath);
             }
             else
             {
@@ -80,6 +87,8 @@ namespace RoleBase.Controllers
             bool ExistFile = false;
             filename = filename.Substring(filename.LastIndexOf("\\") + 1);
             var tmp = doc.Element("FileDependency");
+
+            //Use LINQ
             IEnumerable<XElement> fn =
     from el in tmp.Elements() select el;
     
