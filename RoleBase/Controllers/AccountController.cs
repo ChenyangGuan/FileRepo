@@ -90,7 +90,16 @@ namespace FileRepository.Controllers
             {
                 return View(model);
             }
-
+            var user = await UserManager.FindByNameAsync(model.Email);
+            if (user != null)
+            {
+                if (!await UserManager.IsEmailConfirmedAsync(user.Id))
+                {
+                    string callbackUrl = await SendEmailConfirmationTokenAsync(user.Id, "Confirm your account-Resend");
+                    ViewBag.errorMessage = "You must have a confirmed email to log on.";
+                    return View("Error");
+                }
+            }
             // This doen't count login failures towards lockout only two factor authentication
             // To enable password failures to trigger lockout, change to shouldLockout: true
             var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
@@ -139,21 +148,24 @@ namespace FileRepository.Controllers
                 if (result.Succeeded)
                 {
                     var result2 = await UserManager.AddToRolesAsync(user.Id, "NormalUser");
-                    if (result2.Succeeded) return View("~/Views/Message/RegisterSuccess.cshtml");
+                    //if (result2.Succeeded) return View("~/Views/Message/RegisterSuccess.cshtml");
+                    if (result2.Succeeded)
+                    {
+                        await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+
+                        // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
+                        // Send an email with this link
+                        string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+                        var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+                        await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking " + callbackUrl);
+                        ViewBag.Message = "Check your email and confirm your account, you must be confirmed "
+                             + "before you can log in.";
+                        AuthenticationManager.SignOut();
+                        return View("~/Views/Message/RegisterSuccess.cshtml");
+                    }
                 }
                
-                //if (result.Succeeded)
-                //{
-                //    var code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                //    var callbackUrl = Url.Action("ConfirmEmail", "Account", 
-                //        new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                //    await UserManager.SendEmailAsync(user.Id, 
-                //        "Confirm your account", 
-                //        "Please confirm your account by clicking this link: <a href=\"" 
-                //        + callbackUrl + "\">link</a>");
-                //    ViewBag.Link = callbackUrl;
-                //    return View("DisplayEmail");
-                //}
+               
                 AddErrors(result);
             }
 
@@ -161,7 +173,18 @@ namespace FileRepository.Controllers
             return View(model);
         }
 
-       
+        //
+        // GET: /Account/ConfirmEmail
+        [AllowAnonymous]
+        public async Task<ActionResult> ConfirmEmail(string userId, string code)
+        {
+            if (userId == null || code == null)
+            {
+                return View("Error");
+            }
+            var result = await UserManager.ConfirmEmailAsync(userId, code);
+            return View(result.Succeeded ? "ConfirmEmail" : "Error");
+        }
 
         //
         // GET: /Account/ForgotPassword
@@ -280,6 +303,16 @@ namespace FileRepository.Controllers
             }
         }
 
+        private async Task<string> SendEmailConfirmationTokenAsync(string userID, string subject)
+        {
+            string code = await UserManager.GenerateEmailConfirmationTokenAsync(userID);
+            var callbackUrl = Url.Action("ConfirmEmail", "Account",
+               new { userId = userID, code = code }, protocol: Request.Url.Scheme);
+            await UserManager.SendEmailAsync(userID, subject,
+               "Please confirm your account by clicking " + callbackUrl);
+
+            return callbackUrl;
+        }
         private void AddErrors(IdentityResult result)
         {
             foreach (var error in result.Errors)

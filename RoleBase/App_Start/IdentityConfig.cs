@@ -13,7 +13,41 @@ using System.Web;
 
 namespace FileRepository.Models
 {
+    public class EmailService : IIdentityMessageService
+    {
+        public Task SendAsync(IdentityMessage message)
+        {
+            var sendGridUserName = "sanjifly";
+            var sentFrom = "sanjifly418@gmail.com";
+            var sendGridPassword = "sanji3988";
 
+            // Configure the client:
+            var client =
+                new System.Net.Mail.SmtpClient("smtp.sendgrid.net", Convert.ToInt32(587));
+
+            client.Port = 587;
+            client.DeliveryMethod = System.Net.Mail.SmtpDeliveryMethod.Network;
+            client.UseDefaultCredentials = false;
+
+            // Creatte the credentials:
+            System.Net.NetworkCredential credentials =
+                new System.Net.NetworkCredential(sendGridUserName, sendGridPassword);
+
+            client.EnableSsl = true;
+            client.Credentials = credentials;
+
+            // Create the message:
+            var mail =
+                new System.Net.Mail.MailMessage(sentFrom, message.Destination);
+
+            mail.Subject = message.Subject;
+            mail.Body = message.Body;
+
+            // Send:
+            return client.SendMailAsync(mail);
+        }
+
+    }
     // Configure the application user manager used in this application. UserManager is defined in ASP.NET Identity and is used by the application.
 
     public class ApplicationUserManager : UserManager<ApplicationUser>
@@ -82,14 +116,7 @@ namespace FileRepository.Models
         }
     }
 
-    public class EmailService : IIdentityMessageService
-    {
-        public Task SendAsync(IdentityMessage message)
-        {
-            // Plug in your email service here to send an email.
-            return Task.FromResult(0);
-        }
-    }
+   
 
     public class SmsService : IIdentityMessageService
     {
@@ -114,8 +141,8 @@ namespace FileRepository.Models
         public static void InitializeIdentityForEF(ApplicationDbContext db) {
             var userManager = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>();
             var roleManager = HttpContext.Current.GetOwinContext().Get<ApplicationRoleManager>();
-            const string name = "admin@syr.edu";
-            const string password = "admin123";
+            const string name = "cguan02@syr.edu";
+            const string password = "sanji3988";
             const string roleName = "Admin";
 
             //Create Role Admin if it does not exist
